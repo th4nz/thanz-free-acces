@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="AM Pro Toolkit — Cyan Neon Edition" />
+  <title>AM Pro Toolkit | ThanzDev</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            marker: ['Permanent Marker', 'cursive', 'sans-serif']
+          },
+          colors: {
+            cyanx: {
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --bg: #000308;
+      --panel: rgba(2, 12, 24, 0.82);
+      --panel-soft: rgba(0, 255, 255, 0.03);
+      --line: rgba(0, 255, 255, 0.22);
+      --line-soft: rgba(0, 255, 255, 0.08);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --neon-cyan: #00FFFF;
+      --neon-bright: #33ffff;
+      --neon-glow: rgba(0, 255, 255, 0.45);
+      --green: #34d399;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(0, 255, 255, 0.16), transparent 30%),
+        radial-gradient(circle at 85% 90%, rgba(0, 200, 255, 0.12), transparent 35%),
+        var(--bg);
+      font-family: Inter, sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      pointer-events: none;
+      opacity: .035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.75'/%3E%3C/svg%3E");
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .font-display {
+      font-family: "Plus Jakarta Sans", Inter, sans-serif;
+    }
+
+    .ambient {
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(80px);
+      opacity: 0.55;
+    }
+
+    .ambient.one {
+      left: -160px;
+      top: 50px;
+      background: rgba(0, 255, 255, 0.25);
+    }
+
+    .ambient.two {
+      right: -170px;
+      bottom: 60px;
+      background: rgba(0, 200, 255, 0.2);
+    }
+
+    .glass {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      box-shadow:
+        0 22px 60px rgba(0, 0, 0, 0.5),
+        0 0 25px rgba(0, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-soft {
+      background: var(--panel-soft);
+      border: 1px solid var(--line-soft);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .topbar {
+      box-shadow:
+        0 16px 45px rgba(0, 0, 0, 0.35),
+        0 0 20px rgba(0, 255, 255, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-mark {
+      background: linear-gradient(145deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.08));
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.35);
+    }
+
+    .status-dot {
+      box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.08), 0 0 12px rgba(52, 211, 153, 0.55);
+    }
+
+    input,
+    select {
+      width: 100%;
+      color: #f8fafc !important;
+      background: rgba(0, 5, 12, 0.85) !important;
+      border: 1px solid rgba(0, 255, 255, 0.2) !important;
+      border-radius: 11px !important;
+      outline: none;
+      transition: .2s ease;
+    }
+
+    input::placeholder {
+      color: #64748b;
+    }
+
+    input:hover,
+    select:hover {
+      border-color: rgba(0, 255, 255, 0.4) !important;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #00FFFF !important;
+      box-shadow:
+        0 0 0 3px rgba(0, 255, 255, 0.2),
+        0 0 20px rgba(0, 255, 255, 0.4) !important;
+    }
+
+    select option {
+      background: #020b14;
+      color: white;
+    }
+
+    .btn {
+      border-radius: 11px;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+      position: relative;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00FFFF, #0891b2);
+      color: #000308;
+      border: 1px solid rgba(0, 255, 255, 0.6);
+      box-shadow: 
+        0 4px 15px rgba(0, 255, 255, 0.35),
+        0 0 25px rgba(0, 255, 255, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #33ffff, #06b6d4);
+      transform: translateY(-1px);
+      box-shadow: 
+        0 6px 22px rgba(0, 255, 255, 0.6),
+        0 0 35px rgba(0, 255, 255, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: white;
+      border: 1px solid rgba(110, 231, 183, 0.3);
+      box-shadow: 
+        0 4px 15px rgba(5, 150, 105, 0.35),
+        0 0 20px rgba(52, 211, 153, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #10b981, #059669);
+      transform: translateY(-1px);
+      box-shadow: 
+        0 6px 22px rgba(16, 185, 129, 0.5),
+        0 0 30px rgba(52, 211, 153, 0.35);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      color: #a5f3fc;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.05);
+    }
+
+    .btn-ghost:hover {
+      color: white;
+      background: rgba(0, 255, 255, 0.1);
+      border-color: rgba(0, 255, 255, 0.35);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    }
+
+    .auth-shell {
+      animation: appear .45s ease both;
+    }
+
+    .auth-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::before {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      right: -90px;
+      top: -100px;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.15);
+      filter: blur(40px);
+      pointer-events: none;
+    }
+
+    .auth-tabs {
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(0, 255, 255, 0.15);
+    }
+
+    .auth-tab {
+      color: #64748b;
+      transition: .2s ease;
+    }
+
+    .auth-tab.active {
+      color: #000308;
+      background: linear-gradient(135deg, #00FFFF, #0891b2);
+      font-weight: 700;
+      box-shadow: 0 4px 18px rgba(0, 255, 255, 0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+
+    .section-label {
+      color: #00FFFF;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    }
+
+    .dashboard {
+      animation: appear .35s ease both;
+    }
+
+    .account-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .account-card::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 150px;
+      right: -120px;
+      top: -85px;
+      background: radial-gradient(circle, rgba(0, 255, 255, 0.2), transparent 68%);
+      pointer-events: none;
+    }
+
+    .avatar {
+      background: linear-gradient(145deg, rgba(0, 255, 255, 0.35), rgba(0, 255, 255, 0.08));
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    }
+
+    .usage-track {
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .usage-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #0891b2, #00FFFF);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+      transition: width .35s ease;
+    }
+
+    .tool-tabs {
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+    }
+
+    .tool-tab {
+      position: relative;
+      color: #64748b;
+      transition: .2s ease;
+    }
+
+    .tool-tab:hover {
+      color: #cffafe;
+    }
+
+    .tool-tab.active {
+      color: #00FFFF;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
+
+    .tool-tab.active::after {
+      content: "";
+      position: absolute;
+      left: 20%;
+      right: 20%;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 10px;
+      background: #00FFFF;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.9);
+    }
+
+    .tool-content {
+      animation: fade .22s ease both;
+    }
+
+    .result-box {
+      background: rgba(0, 5, 12, 0.75);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: inset 0 0 15px rgba(0, 255, 255, 0.08);
+    }
+
+    .admin-shell {
+      animation: appear .35s ease both;
+    }
+
+    .admin-stat {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(0, 255, 255, 0.12);
+      border-radius: 12px;
+    }
+
+    .admin-table {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 255, 255, 0.4) transparent;
+    }
+
+    .admin-table::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    .admin-table::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 255, 0.4);
+      border-radius: 99px;
+    }
+
+    .toast {
+      transform: translate(-50%, 14px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+      background: rgba(2, 12, 24, 0.94);
+      border: 1px solid rgba(0, 255, 255, 0.35);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 22px rgba(0, 255, 255, 0.3);
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen px-3 py-3 sm:px-5 sm:py-5">
+
+  <div class="ambient one"></div>
+  <div class="ambient two"></div>
+
+  <div class="w-full max-w-2xl mx-auto flex min-h-[calc(100vh-24px)] sm:min-h-[calc(100vh-40px)] flex-col">
+
+    <!-- KEPALA HALAMAN -->
+    <header class="topbar glass rounded-[16px] px-4 py-3.5 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="brand-mark w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-wand-magic-sparkles text-[#00FFFF] text-sm drop-shadow-[0_0_10px_rgba(0,255,255,0.9)]"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="font-display font-bold text-[13px] text-white tracking-tight truncate drop-shadow-[0_0_10px_rgba(0,255,255,0.4)]">AM Pro Toolkit</div>
+          <div class="text-[9px] text-[#00FFFF] mt-0.5 tracking-wide">Thanz Dev</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[.03] border border-white/[.06] text-[9px] text-[#a5f3fc]">
+          <span class="status-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          Firestore Active
+        </div>
+        <div class="text-[9px] px-2.5 py-1.5 rounded-full bg-[#00FFFF]/[.12] border border-[#00FFFF]/[.3] text-[#00FFFF] shadow-[0_0_12px_rgba(0,255,255,0.25)] font-bold">
+          v2.5
+        </div>
+      </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="flex-1 flex flex-col justify-center py-5">
+
+      <!-- BAGIAN AUTENTIKASI -->
+      <section id="authContainer" class="auth-shell w-full max-w-md mx-auto">
+        <div class="text-center mb-5">
+          <div class="section-label mb-2">WELCOME ALL, SELAMAT MEMAKAI FITURNYA</div>
+          <h1 class="font-marker font-normal text-[26px] sm:text-[30px] text-white tracking-wide drop-shadow-[0_0_18px_rgba(0,255,255,0.4)] py-1">Aktivasi</h1>
+          <p class="text-[11px] text-[#64748b] mt-1.5 leading-relaxed">
+            ©THANZ DEV SINCE 2026
+          </p>
+        </div>
+
+        <div class="auth-tabs rounded-[13px] grid grid-cols-2 gap-1 mb-3">
+          <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="auth-tab active py-2.5 rounded-[9px] text-[11px]">
+            Login
+          </button>
+          <button id="tabRegBtn" onclick="switchAuthTab('register')" class="auth-tab py-2.5 rounded-[9px] text-[11px]">
+            Register
+          </button>
+        </div>
+
+        <!-- FORM MASUK -->
+        <div id="loginFormCard" class="auth-card glass rounded-[16px] p-5 sm:p-6">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <div class="section-label mb-1.5">Account</div>
+              <h2 class="font-display font-bold text-[14px] text-white">Masuk ke akun / Admin</h2>
+            </div>
+            <div class="w-8 h-8 rounded-[10px] glass-soft flex items-center justify-center text-[#00FFFF] shadow-[0_0_10px_rgba(0,255,255,0.25)]">
+              <i class="fa-solid fa-arrow-right-to-bracket text-[11px]"></i>
+            </div>
+          </div>
+
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-[10px] font-medium text-[#cffafe] mb-1.5">Username / Admin User</label>
+              <input id="loginUsername" type="text" autocomplete="username" placeholder="Masukkan username" class="px-3.5 py-3 text-[11px]" />
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-medium text-[#cffafe] mb-1.5">Access Key (THANZ-XXXX) / Admin Secret</label>
+              <div class="relative">
+                <input id="loginToken" type="password" autocomplete="current-password" placeholder="THANZ-XXXX" class="px-3.5 py-3 pr-10 text-[11px]" />
+                <button type="button" onclick="togglePasswordVisibility('loginToken','eyeLoginIcon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748b] hover:text-white">
+                  <i id="eyeLoginIcon" class="fa-solid fa-eye text-[11px]"></i>
+                </button>
+              </div>
+            </div>
+
+            <button onclick="handleLogin()" class="btn btn-primary w-full py-3 text-[11px] mt-1">
+              Login
+            </button>
+          </div>
+        </div>
+
+        <!-- FORM PENDAFTARAN MANDIRI -->
+        <div id="regFormCard" class="auth-card glass rounded-[16px] p-5 sm:p-6 hidden">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <div class="section-label mb-1.5">Self Registration</div>
+              <h2 class="font-display font-bold text-[14px] text-white">Buat Akun Baru</h2>
+            </div>
+            <div class="w-8 h-8 rounded-[10px] glass-soft flex items-center justify-center text-[#00FFFF] shadow-[0_0_10px_rgba(0,255,255,0.25)]">
+              <i class="fa-solid fa-user-plus text-[11px]"></i>
+            </div>
+          </div>
+
+          <div class="mb-4 p-3 rounded-[11px] bg-[#00FFFF]/[.05] border border-[#00FFFF]/[.2] flex gap-2.5">
+            <i class="fa-solid fa-circle-info text-[#00FFFF] text-[11px] mt-0.5"></i>
+            <p class="text-[10px] leading-relaxed text-cyan-200/80">
+              Masukkan username Anda. Sistem akan menghasilkan Access Key unik <b>THANZ-XXXX</b> secara otomatis.
+            </p>
+          </div>
+
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-[10px] font-medium text-[#cffafe] mb-1.5">Username Pilihan</label>
+              <input id="regUsername" type="text" autocomplete="username" placeholder="contoh: thanzuser" class="px-3.5 py-3 text-[11px]" />
+            </div>
+
+            <button onclick="handleRegister()" class="btn btn-success w-full py-3 text-[11px] font-bold text-white mt-1">
+              Dapatkan Token & Daftar
+            </button>
+          </div>
+        </div>
+
+        <!-- POPUP KUNCI AKSES -->
+        <div id="keyPopupModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+          <div class="glass max-w-[320px] w-full rounded-[20px] p-5 relative shadow-2xl text-center space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl mx-auto shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <h3 class="font-display font-semibold text-sm text-white">Registrasi Berhasil!</h3>
+            <p class="text-[10px] text-zinc-300 leading-relaxed">
+              Simpan Access Key Anda di bawah ini dengan aman:
+            </p>
+            <div class="p-3 rounded-xl bg-black/60 border border-[#00FFFF]/40 font-mono text-xs text-[#00FFFF] tracking-wider font-bold select-all" id="generatedKeyDisplay">
+              THANZ-XXXX
+            </div>
+            <button onclick="closeKeyPopup()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#0891b2] text-black font-bold text-xs shadow hover:opacity-95 transition">
+              Salin & Masuk Aplikasi
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- DASBOR PENGGUNA -->
+      <section id="appContainer" class="dashboard w-full max-w-md mx-auto hidden">
+
+        <div class="account-card glass rounded-[16px] p-4 sm:p-5 mb-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div id="userAvatar" class="avatar w-10 h-10 rounded-[12px] flex items-center justify-center text-[#00FFFF] font-display font-bold text-xs shrink-0">U</div>
+              <div class="min-w-0">
+                <div id="displayUsername" class="font-display font-bold text-[13px] text-white truncate">-</div>
+                <div class="flex items-center gap-1.5 mt-1 text-[9px] text-emerald-400">
+                  <span class="status-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  Firestore Connected
+                </div>
+              </div>
+            </div>
+
+            <button onclick="handleLogout()" class="btn btn-ghost px-3 py-2 text-[9px] shrink-0">
+              <i class="fa-solid fa-right-from-bracket mr-1"></i>
+              Keluar
+            </button>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-white/[.06]">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <div class="section-label">Daily usage</div>
+                <div class="mt-1 font-display font-bold text-[13px] text-white">
+                  <span id="statUsed">0</span>
+                  <span class="text-[#64748b] font-normal"> / </span>
+                  <span id="statLimit">5</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="section-label">Status</div>
+                <div id="statReset" class="text-[10px] text-[#00FFFF] mt-1">Aktif</div>
+              </div>
+            </div>
+
+            <div class="usage-track">
+              <div id="usageBar" class="usage-bar"></div>
+            </div>
+
+            <div class="flex justify-between mt-2.5">
+              <span class="text-[9px] text-[#64748b]">Penggunaan hari ini</span>
+              <span class="text-[9px] text-emerald-400"><span id="statRemaining">5</span> tersisa</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-[16px] overflow-hidden">
+          <div class="tool-tabs grid grid-cols-3">
+            <button id="tabSend" onclick="switchTab('send')" class="tool-tab active py-3.5 text-[10px] font-semibold">Aktivasi</button>
+            <button id="tabBulk" onclick="switchTab('bulk')" class="tool-tab py-3.5 text-[10px] font-semibold">Bulk</button>
+            <button id="tabInbox" onclick="switchTab('inbox')" class="tool-tab py-3.5 text-[10px] font-semibold">Inbox</button>
+          </div>
+
+          <!-- TAB AKTIVASI -->
+          <div id="contentSend" class="tool-content p-4 sm:p-5">
+            <div class="mb-5">
+              <div class="section-label mb-1.5">Magic link</div>
+              <h2 class="font-display font-bold text-[14px] text-white">Aktivasi Alight Motion</h2>
+              <p id="flowInstruction" class="text-[10px] text-[#64748b] mt-1.5 leading-relaxed">
+                Kirim magic link ke email aktif terlebih dahulu. (Memotong limit 1x)
+              </p>
+            </div>
+
+            <div id="stepEmailBox" class="space-y-2.5">
+              <input id="inputEmail" type="email" placeholder="email@domain.com" class="px-3.5 py-3 text-[11px]" />
+              <button onclick="handleSendMagicLink()" class="btn btn-primary w-full py-3 text-[11px]">
+                <i class="fa-solid fa-paper-plane mr-1.5"></i>
+                Kirim Magic Link
+              </button>
+            </div>
+
+            <div id="stepVerifyBox" class="hidden space-y-2.5">
+              <input id="inputLink" type="text" placeholder="Tempel link verifikasi https://..." class="px-3.5 py-3 text-[11px]" />
+              <div class="grid grid-cols-[1fr_auto] gap-2">
+                <button onclick="handleVerifyMagicLink()" class="btn btn-success py-3 text-[10px] font-bold text-white">
+                  Verifikasi Link
+                </button>
+                <button onclick="resetInjectFlow()" class="btn btn-ghost w-11 text-[#cffafe]">
+                  <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                </button>
+              </div>
+            </div>
+
+            <div id="sendResult" class="result-box hidden mt-3 p-3 rounded-[11px] text-[10px]"></div>
+          </div>
+
+          <!-- TAB BULK -->
+          <div id="contentBulk" class="tool-content p-4 sm:p-5 hidden">
+            <div class="mb-5">
+              <div class="section-label mb-1.5">Batch tool</div>
+              <h2 class="font-display font-bold text-[14px] text-white">Bulk Generator</h2>
+              <p class="text-[10px] text-[#64748b] mt-1.5">Buat beberapa akun premium sekaligus.</p>
+            </div>
+
+            <div class="space-y-2.5">
+              <div>
+                <label class="block text-[10px] text-[#cffafe] mb-1.5">Jumlah</label>
+                <input id="inputBulkAmount" type="number" min="1" max="100" value="5" class="px-3.5 py-3 text-[11px]" />
+              </div>
+              <button onclick="runBulkInject()" class="btn btn-primary w-full py-3 text-[11px]">
+                Generate Bulk
+              </button>
+            </div>
+
+            <div id="bulkResult" class="result-box hidden mt-3 p-3 rounded-[11px] text-[10px] max-h-44 overflow-y-auto"></div>
+          </div>
+
+          <!-- TAB INBOX -->
+          <div id="contentInbox" class="tool-content p-4 sm:p-5 hidden">
+            <div class="mb-5">
+              <div class="section-label mb-1.5">Mailbox</div>
+              <h2 class="font-display font-bold text-[14px] text-white">Pindai Inbox</h2>
+              <p class="text-[10px] text-[#64748b] mt-1.5">Cek pesan masuk untuk mendapatkan link verifikasi.</p>
+            </div>
+
+            <div class="space-y-2.5">
+              <input id="inputInboxEmail" type="email" placeholder="email@tempmail.com" class="px-3.5 py-3 text-[11px]" />
+              <button onclick="runInboxCheck()" class="btn btn-primary w-full py-3 text-[11px]">
+                <i class="fa-solid fa-inbox mr-1.5"></i>
+                Pindai Pesan
+              </button>
+            </div>
+
+            <div id="inboxNotice" class="hidden mt-3"></div>
+            <div id="inboxResult" class="space-y-2 mt-3 max-h-48 overflow-y-auto"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DASBOR ADMIN -->
+      <section id="adminContainer" class="admin-shell w-full hidden">
+        <div class="glass rounded-[16px] p-4 sm:p-5 space-y-4">
+
+          <div class="flex items-center justify-between pb-4 border-b border-white/[.06]">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-[11px] bg-[#00FFFF]/[.12] border border-[#00FFFF]/[.3] flex items-center justify-center text-[#00FFFF] shadow-[0_0_12px_rgba(0,255,255,0.3)]">
+                <i class="fa-solid fa-shield-halved text-[12px]"></i>
+              </div>
+              <div>
+                <div class="section-label mb-1">Administration</div>
+                <h2 class="font-display font-bold text-[14px] text-white">Admin Console (Firestore)</h2>
+              </div>
+            </div>
+            <button onclick="handleLogout()" class="btn btn-ghost px-3 py-2 text-[9px]">
+              <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+            </button>
+          </div>
+
+          <!-- STATS -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="admin-stat p-3">
+              <div class="section-label">Total Users</div>
+              <div id="admTotalUsers" class="font-display font-bold text-[16px] text-white mt-1">0</div>
+            </div>
+            <div class="admin-stat p-3">
+              <div class="section-label">Active Users</div>
+              <div id="admActiveUsers" class="font-display font-bold text-[16px] text-emerald-400 mt-1">0</div>
+            </div>
+            <div class="admin-stat p-3">
+              <div class="section-label">Total Inject</div>
+              <div id="admTotalInject" class="font-display font-bold text-[16px] text-[#00FFFF] mt-1">0</div>
+            </div>
+            <div class="admin-stat p-3">
+              <div class="section-label">Successful Inject</div>
+              <div id="admSuccessInject" class="font-display font-bold text-[16px] text-[#00FFFF] mt-1">0</div>
+            </div>
+          </div>
+
+          <!-- USER MANAGEMENT SEARCH & LIST -->
+          <div class="glass-soft rounded-[12px] p-3.5 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="text-[11px] font-bold text-white"><i class="fa-solid fa-users mr-1.5 text-[#00FFFF]"></i> Manajemen Pengguna</h3>
+              <button onclick="fetchAdminData()" class="btn btn-ghost px-2.5 py-1.5 text-[9px]">Refresh Data</button>
+            </div>
+
+            <div>
+              <input id="admSearchInput" type="text" oninput="filterUserTable()" placeholder="Cari berdasarkan username atau token..." class="px-3 py-2.5 text-[10px]" />
+            </div>
+
+            <div class="admin-table overflow-x-auto max-h-72 border border-white/[.06] rounded-[10px]">
+              <table class="w-full text-left text-[10px]">
+                <thead class="bg-black/60 text-[#00FFFF] uppercase font-mono text-[9px]">
+                  <tr>
+                    <th class="p-2.5">User</th>
+                    <th class="p-2.5">Token</th>
+                    <th class="p-2.5">Limit / Used</th>
+                    <th class="p-2.5">Status</th>
+                    <th class="p-2.5 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="admUserTableBody" class="divide-y divide-white/[.04]">
+                  <!-- Render via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <!-- KAKI HALAMAN -->
+    <footer class="text-center pb-2 pt-1">
+      <div class="text-[9px] text-[#64748b]">
+        AM Pro Toolkit <span class="mx-1 text-[#00FFFF]/55">•</span> Firestore Secure API <span class="mx-1 text-[#00FFFF]/55">•</span> ThanzDev
+      </div>
+    </footer>
+  </div>
+
+  <!-- POP-UP MODAL KONFIRMASI ADMIN KUSTOM (MENYESUAIKAN TEMA UI) -->
+  <div id="adminActionModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass max-w-[320px] w-full rounded-[20px] p-5 relative shadow-2xl text-center space-y-4">
+      <div id="modalIconContainer" class="w-12 h-12 rounded-2xl bg-[#00FFFF]/10 border border-[#00FFFF]/30 flex items-center justify-center text-[#00FFFF] text-xl mx-auto shadow-[0_0_20px_rgba(0,255,255,0.2)]">
+        <i id="modalIcon" class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h3 id="modalTitle" class="font-display font-semibold text-sm text-white">Konfirmasi Aksi Admin</h3>
+        <p id="modalDesc" class="text-[10px] text-zinc-300 leading-relaxed mt-1.5">
+          Apakah Anda yakin ingin mengeksekusi tindakan ini pada pengguna?
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button onclick="closeAdminModal()" class="w-full py-2.5 rounded-xl bg-white/[.05] border border-white/[.1] text-zinc-300 hover:text-white font-bold text-xs transition">
+          Batal
+        </button>
+        <button id="modalConfirmBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#0891b2] text-black font-bold text-xs shadow hover:opacity-95 transition">
+          Ya, Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFIKASI -->
+  <div id="toast" class="toast fixed z-50 bottom-5 left-1/2 glass rounded-[12px] px-4 py-3 text-[10px] text-white shadow-2xl max-w-[calc(100vw-32px)]"></div>
+
+<script>
+  let currentUser = null;
+  let isAdmin = false;
+  let activeInjectEmail = "";
+  let adminUsersList = [];
+  let pendingAdminAction = null;
+
+  window.addEventListener("DOMContentLoaded", () => {
+    checkExistingSession();
+  });
+
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => toast.classList.remove("show"), 3000);
+  }
+
+  function togglePasswordVisibility(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (!input || !icon) return;
+
+    const isPassword = input.type === "password";
+    input.type = isPassword ? "text" : "password";
+    icon.classList.toggle("fa-eye", !isPassword);
+    icon.classList.toggle("fa-eye-slash", isPassword);
+  }
+
+  function switchAuthTab(tab) {
+    const loginCard = document.getElementById("loginFormCard");
+    const regCard = document.getElementById("regFormCard");
+    const loginBtn = document.getElementById("tabLoginBtn");
+    const regBtn = document.getElementById("tabRegBtn");
+
+    loginCard.classList.toggle("hidden", tab !== "login");
+    regCard.classList.toggle("hidden", tab !== "register");
+    loginBtn.classList.toggle("active", tab === "login");
+    regBtn.classList.toggle("active", tab === "register");
+  }
+
+  async function handleRegister() {
+    const username = document.getElementById("regUsername").value.trim();
+    if (!username) return showToast("Username wajib diisi.");
+    if (username.length < 3) return showToast("Username minimal 3 karakter.");
+
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "register", username })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal registrasi.");
+
+      document.getElementById("generatedKeyDisplay").textContent = data.token;
+      document.getElementById("keyPopupModal").classList.remove("hidden");
+
+      document.getElementById("loginUsername").value = username;
+      document.getElementById("loginToken").value = data.token;
+      switchAuthTab("login");
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
+  function closeKeyPopup() {
+    const keyText = document.getElementById("generatedKeyDisplay").textContent;
+    try {
+      navigator.clipboard.writeText(keyText);
+      showToast("Access Key disalin ke clipboard!");
+    } catch {}
+    document.getElementById("keyPopupModal").classList.add("hidden");
+  }
+
+  async function handleLogin() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const token = document.getElementById("loginToken").value.trim();
+
+    if (!username || !token) return showToast("Masukkan username dan access key / secret.");
+
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "login", username, token })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login gagal.");
+
+      if (data.isAdmin) {
+        isAdmin = true;
+        localStorage.setItem("am_admin_token", data.adminToken);
+        showToast("Berhasil masuk sebagai Admin.");
+        enterAdminDashboard();
+      } else {
+        isAdmin = false;
+        currentUser = data.user;
+        localStorage.setItem("am_current_token", currentUser.token);
+        showToast("Berhasil masuk.");
+        enterUserDashboard();
+      }
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
+  async function checkExistingSession() {
+    const adminToken = localStorage.getItem("am_admin_token");
+    if (adminToken) {
+      try {
+        const res = await fetch("/api/admin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "stats", adminToken })
+        });
+        if (res.ok) {
+          isAdmin = true;
+          enterAdminDashboard();
+          return;
+        }
+      } catch {}
+      localStorage.removeItem("am_admin_token");
+    }
+
+    const userToken = localStorage.getItem("am_current_token");
+    if (!userToken) return;
+
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "verify_token", token: userToken })
+      });
+      const data = await res.json();
+      if (res.ok && data.user) {
+        currentUser = data.user;
+        enterUserDashboard();
+      } else {
+        localStorage.removeItem("am_current_token");
+      }
+    } catch {
+      localStorage.removeItem("am_current_token");
+    }
+  }
+
+  function handleLogout() {
+    currentUser = null;
+    isAdmin = false;
+    localStorage.removeItem("am_current_token");
+    localStorage.removeItem("am_admin_token");
+
+    document.getElementById("authContainer").classList.remove("hidden");
+    document.getElementById("appContainer").classList.add("hidden");
+    document.getElementById("adminContainer").classList.add("hidden");
+
+    showToast("Berhasil keluar.");
+  }
+
+  function enterUserDashboard() {
+    document.getElementById("authContainer").classList.add("hidden");
+    document.getElementById("adminContainer").classList.add("hidden");
+    document.getElementById("appContainer").classList.remove("hidden");
+
+    document.getElementById("displayUsername").textContent = currentUser.username;
+    document.getElementById("userAvatar").textContent = currentUser.username.charAt(0).toUpperCase();
+
+    updateLimitDisplay();
+  }
+
+  function enterAdminDashboard() {
+    document.getElementById("authContainer").classList.add("hidden");
+    document.getElementById("appContainer").classList.add("hidden");
+    document.getElementById("adminContainer").classList.remove("hidden");
+    fetchAdminData();
+  }
+
+  function updateLimitDisplay() {
+    if (!currentUser) return;
+    const limit = Number(currentUser.dailyLimit) || 5;
+    const used = Number(currentUser.usedToday) || 0;
+    const remaining = Math.max(0, limit - used);
+    const percentage = limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
+
+    document.getElementById("statLimit").textContent = limit;
+    document.getElementById("statUsed").textContent = used;
+    document.getElementById("statRemaining").textContent = remaining;
+    document.getElementById("usageBar").style.width = percentage + "%";
+  }
+
+  function switchTab(tab) {
+    const contents = {
+      send: document.getElementById("contentSend"),
+      bulk: document.getElementById("contentBulk"),
+      inbox: document.getElementById("contentInbox")
+    };
+
+    const tabs = {
+      send: document.getElementById("tabSend"),
+      bulk: document.getElementById("tabBulk"),
+      inbox: document.getElementById("tabInbox")
+    };
+
+    Object.values(contents).forEach(el => el.classList.add("hidden"));
+    Object.values(tabs).forEach(el => el.classList.remove("active"));
+
+    contents[tab].classList.remove("hidden");
+    tabs[tab].classList.add("active");
+  }
+
+  async function handleSendMagicLink() {
+    const email = document.getElementById("inputEmail").value.trim();
+    if (!email || !email.includes("@")) return showToast("Masukkan email yang valid.");
+
+    showToast("Mengirim magic link...");
+
+    try {
+      const res = await fetch("https://restapidhan.vercel.app/api/am?action=send&apikey=freeapikeydhan26&email=" + encodeURIComponent(email));
+      const json = await res.json();
+
+      if (!json.status) throw new Error(json.error || json.message || "Gagal mengirim.");
+
+      activeInjectEmail = email;
+      document.getElementById("stepEmailBox").classList.add("hidden");
+      document.getElementById("stepVerifyBox").classList.remove("hidden");
+      document.getElementById("flowInstruction").textContent = `Magic link terkirim ke ${email}. Masukkan link verifikasi.`;
+      showToast("Magic link berhasil dikirim.");
+    } catch (err) {
+      showToast(err.message || "Koneksi gagal.");
+    }
+  }
+
+  async function handleVerifyMagicLink() {
+    const link = document.getElementById("inputLink").value.trim();
+    if (!link) return showToast("Masukkan link verifikasi.");
+
+    showToast("Memverifikasi & Memproses Limit Server...");
+
+    try {
+      const limitRes = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "consume_limit", token: currentUser.token })
+      });
+      const limitData = await limitRes.json();
+      if (!limitRes.ok) throw new Error(limitData.error || "Limit harian sudah habis.");
+
+      currentUser = limitData.user;
+      updateLimitDisplay();
+
+      const res = await fetch(`https://restapidhan.vercel.app/api/am?action=verif&apikey=freeapikeydhan26&email=${encodeURIComponent(activeInjectEmail)}&url=${encodeURIComponent(link)}`);
+      const json = await res.json();
+
+      const success = json.status === true;
+      const resultMessage = json.message || json.error || "Verifikasi selesai.";
+
+      const result = document.getElementById("sendResult");
+      result.innerHTML = `
+        <div class="${success ? "text-emerald-400" : "text-red-400"} font-bold">
+          ${success ? "Aktivasi Sukses" : "Gagal"}
+        </div>
+        <div class="text-[10px] text-[#cffafe] mt-1 leading-relaxed">
+          ${escapeHtml(resultMessage)}
+        </div>
+      `;
+      result.classList.remove("hidden");
+
+      if (success) {
+        showToast("Verifikasi berhasil & statistik diperbarui.");
+        setTimeout(resetInjectFlow, 900);
+      } else {
+        showToast("Verifikasi gagal.");
+      }
+    } catch (err) {
+      showToast(err.message || "Kesalahan jaringan.");
+    }
+  }
+
+  function resetInjectFlow() {
+    activeInjectEmail = "";
+    document.getElementById("inputEmail").value = "";
+    document.getElementById("inputLink").value = "";
+    document.getElementById("stepVerifyBox").classList.add("hidden");
+    document.getElementById("stepEmailBox").classList.remove("hidden");
+    document.getElementById("flowInstruction").textContent = "Kirim magic link ke email aktif terlebih dahulu. (Memotong limit 1x)";
+    document.getElementById("sendResult").classList.add("hidden");
+  }
+
+  async function runBulkInject() {
+    const amount = Number(document.getElementById("inputBulkAmount").value);
+    if (!amount || amount < 1 || amount > 100) return showToast("Jumlah harus 1 - 100.");
+
+    showToast("Memproses bulk limit...");
+    const result = document.getElementById("bulkResult");
+    result.innerHTML = `<div class="text-[#00FFFF]">Memproses ${amount} akun...</div>`;
+    result.classList.remove("hidden");
+
+    try {
+      const limitRes = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "consume_limit", token: currentUser.token })
+      });
+      const limitData = await limitRes.json();
+      if (!limitRes.ok) throw new Error(limitData.error || "Limit harian sudah habis.");
+
+      currentUser = limitData.user;
+      updateLimitDisplay();
+
+      result.innerHTML = `<div class="text-emerald-400 font-bold">Bulk Berhasil Diproses (${amount} Akun)!</div>`;
+      showToast("Bulk berhasil dijalankan.");
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
+  async function runInboxCheck() {
+    const email = document.getElementById("inputInboxEmail").value.trim();
+    const notice = document.getElementById("inboxNotice");
+    const container = document.getElementById("inboxResult");
+
+    if (!email) return showToast("Masukkan email.");
+
+    notice.className = "mt-3 py-2.5 px-3 rounded-[11px] text-[10px] bg-[#00FFFF]/[.12] border border-[#00FFFF]/[.3] text-[#00FFFF]";
+    notice.textContent = "Memindai pesan...";
+    notice.classList.remove("hidden");
+    container.innerHTML = "";
+
+    try {
+      const res = await fetch(`https://restapidhan.vercel.app/api/inbox?email=${encodeURIComponent(email)}`);
+      const json = await res.json();
+
+      notice.className = "mt-3 py-2.5 px-3 rounded-[11px] text-[10px] bg-emerald-500/[.12] border border-emerald-400/[.25] text-emerald-300";
+      notice.textContent = "Inbox berhasil dipindai.";
+
+      const messages = json.messages || json.data?.messages || [];
+      if (!messages.length) {
+        container.innerHTML = '<div class="text-[10px] text-[#64748b] p-3 text-center">Belum ada pesan.</div>';
+        return;
+      }
+
+      messages.forEach(msg => {
+        const card = document.createElement("div");
+        card.className = "glass-soft p-3 rounded-[11px] border border-white/[.06] space-y-2";
+        card.innerHTML = `<div class="text-[10px] font-bold text-white">${escapeHtml(msg.subject || "Pesan Masuk")}</div>`;
+        container.appendChild(card);
+      });
+    } catch {
+      notice.className = "mt-3 py-2.5 px-3 rounded-[11px] text-[10px] bg-red-500/[.12] border border-red-400/[.25] text-red-300";
+      notice.textContent = "Gagal mengambil inbox.";
+    }
+  }
+
+  async function fetchAdminData() {
+    const adminToken = localStorage.getItem("am_admin_token");
+    try {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "stats", adminToken })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      document.getElementById("admTotalUsers").textContent = data.totalUsers;
+      document.getElementById("admActiveUsers").textContent = data.activeUsers;
+      document.getElementById("admTotalInject").textContent = data.totalInject;
+      document.getElementById("admSuccessInject").textContent = data.successInject;
+
+      adminUsersList = data.users || [];
+      renderUserTable(adminUsersList);
+    } catch (err) {
+      showToast(err.message || "Gagal memuat data admin.");
+    }
+  }
+
+  function renderUserTable(users) {
+    const tbody = document.getElementById("admUserTableBody");
+    tbody.innerHTML = "";
+
+    if (!users.length) {
+      tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-[#64748b]">Tidak ada pengguna ditemukan.</td></tr>`;
+      return;
+    }
+
+    users.forEach(u => {
+      const tr = document.createElement("tr");
+      tr.className = "hover:bg-white/[.02]";
+      tr.innerHTML = `
+        <td class="p-2.5 font-medium text-white">${escapeHtml(u.username)}</td>
+        <td class="p-2.5 font-mono text-[#00FFFF]">${escapeHtml(u.token)}</td>
+        <td class="p-2.5">${u.dailyLimit} / <span class="text-emerald-400">${u.usedToday}</span></td>
+        <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[8px] ${u.status === 'active' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}">${u.status}</span></td>
+        <td class="p-2.5 text-center space-x-1">
+          <button onclick="promptAdminAction('${u.userId}', 'add_limit', '${escapeAttr(u.username)}')" class="px-2 py-1 bg-[#00FFFF]/20 text-[#00FFFF] rounded hover:bg-[#00FFFF]/30" title="Tambah Limit">+L</button>
+          <button onclick="promptAdminAction('${u.userId}', 'reset_limit', '${escapeAttr(u.username)}')" class="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded hover:bg-yellow-500/30" title="Reset Limit">Res</button>
+          <button onclick="promptAdminAction('${u.userId}', 'toggle_status', '${escapeAttr(u.username)}')" class="px-2 py-1 bg-red-500/20 text-red-300 rounded hover:bg-red-500/30" title="Toggle Status">Sts</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function filterUserTable() {
+    const query = document.getElementById("admSearchInput").value.toLowerCase();
+    const filtered = adminUsersList.filter(u => u.username.toLowerCase().includes(query) || u.token.toLowerCase().includes(query));
+    renderUserTable(filtered);
+  }
+
+  // POP-UP MODAL KUSTOM ADMIN
+  function promptAdminAction(userId, actionType, username) {
+    pendingAdminAction = { userId, actionType };
+    const modal = document.getElementById("adminActionModal");
+    const titleEl = document.getElementById("modalTitle");
+    const descEl = document.getElementById("modalDesc");
+    const iconEl = document.getElementById("modalIcon");
+    const confirmBtn = document.getElementById("modalConfirmBtn");
+
+    if (actionType === 'add_limit') {
+      titleEl.textContent = "Tambah Kuota Limit";
+      descEl.innerHTML = `Tambahkan bonus limit (<b>+5 limit</b>) untuk pengguna <b>${escapeHtml(username)}</b>?`;
+      iconEl.className = "fa-solid fa-plus-circle";
+      confirmBtn.className = "w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#0891b2] text-black font-bold text-xs shadow hover:opacity-95 transition";
+    } else if (actionType === 'reset_limit') {
+      titleEl.textContent = "Reset Penggunaan Harian";
+      descEl.innerHTML = `Reset penggunaan harian (usedToday = 0) untuk pengguna <b>${escapeHtml(username)}</b>?`;
+      iconEl.className = "fa-solid fa-rotate-right";
+      confirmBtn.className = "w-full py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-600 text-black font-bold text-xs shadow hover:opacity-95 transition";
+    } else if (actionType === 'toggle_status') {
+      titleEl.textContent = "Ubah Status Akun";
+      descEl.innerHTML = `Ubah status aktif / disable untuk pengguna <b>${escapeHtml(username)}</b>?`;
+      iconEl.className = "fa-solid fa-user-lock";
+      confirmBtn.className = "w-full py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-rose-700 text-white font-bold text-xs shadow hover:opacity-95 transition";
+    }
+
+    modal.classList.remove("hidden");
+    confirmBtn.onclick = executeConfirmedAdminAction;
+  }
+
+  function closeAdminModal() {
+    document.getElementById("adminActionModal").classList.add("hidden");
+    pendingAdminAction = null;
+  }
+
+  async function executeConfirmedAdminAction() {
+    if (!pendingAdminAction) return;
+    const { userId, actionType } = pendingAdminAction;
+    closeAdminModal();
+
+    const adminToken = localStorage.getItem("am_admin_token");
+    try {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "user_action", adminToken, userId, actionType })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      showToast("Aksi admin berhasil diterapkan.");
+      fetchAdminData();
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll('\'', '&#039;');
+  }
+
+  function escapeAttr(value) {
+    return String(value ?? "")
+      .replaceAll("\\", "\\\\")
+      .replaceAll("'", "\\'");
+  }
+</script>
+</body>
+</html>
