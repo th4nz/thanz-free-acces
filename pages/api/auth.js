@@ -54,6 +54,7 @@ export default async function handler(req, res) {
     const validAdminUser = process.env.ADMIN_USERNAME || 'thanz';
     const validAdminSecret = process.env.ADMIN_SECRET || 'thanzadmin337';
 
+    // Admin login
     if (action === 'login' && username === validAdminUser && token === validAdminSecret) {
       return res.status(200).json({
         success: true,
@@ -61,6 +62,27 @@ export default async function handler(req, res) {
         adminToken: validAdminSecret,
         message: 'Berhasil login sebagai admin.'
       });
+    }
+
+    // Verify token (admin or user token)
+    if (action === 'verify') {
+      if (!token) return res.status(400).json({ error: 'Token required.' });
+
+      // verify admin token
+      if (token === validAdminSecret) {
+        return res.status(200).json({ success: true, valid: true, isAdmin: true });
+      }
+
+      // verify user token in Firestore
+      const usersRefVerify = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+      const qVerify = query(usersRefVerify, where('token', '==', token));
+      const snapVerify = await getDocs(qVerify);
+      if (!snapVerify.empty) {
+        const userData = snapVerify.docs[0].data();
+        return res.status(200).json({ success: true, valid: true, isAdmin: false, user: userData });
+      }
+
+      return res.status(401).json({ success: false, valid: false });
     }
 
     const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
