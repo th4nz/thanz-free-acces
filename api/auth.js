@@ -45,8 +45,8 @@ export default async function handler(req, res) {
     const clientIp = getClientIp(req);
 
     // Konfigurasi Admin dari Environment Variables dengan fallback default
-    const validAdminUser = process.env.ADMIN_USERNAME || 'admin';
-    const validAdminSecret = process.env.ADMIN_SECRET || 'thanzadmin';
+    const validAdminUser = process.env.ADMIN_USERNAME || 'thanz';
+    const validAdminSecret = process.env.ADMIN_SECRET || 'thanzadmin337';
 
     // 1. Aksi Login atau Validasi Masuk
     if (action === 'login') {
