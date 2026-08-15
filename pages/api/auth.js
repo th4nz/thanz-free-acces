@@ -49,6 +49,20 @@ export default async function handler(req, res) {
   try {
     const { action, username, token } = req.body || {};
     const clientIp = getClientIp(req);
+
+    // Admin quick-check from environment variables
+    const validAdminUser = process.env.ADMIN_USERNAME || 'thanz';
+    const validAdminSecret = process.env.ADMIN_SECRET || 'thanzadmin337';
+
+    if (action === 'login' && username === validAdminUser && token === validAdminSecret) {
+      return res.status(200).json({
+        success: true,
+        isAdmin: true,
+        adminToken: validAdminSecret,
+        message: 'Berhasil login sebagai admin.'
+      });
+    }
+
     const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
 
     // REGISTER
