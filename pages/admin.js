@@ -5,18 +5,48 @@ export default function AdminPage() {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // simple client-side guard: require adminToken in localStorage
-    const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
-    if (!token) {
+    async function check() {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
+      if (!token) {
+        router.replace('/');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify', token })
+        });
+
+        const data = await res.json().catch(() => null);
+
+        if (res.ok && data && data.valid) {
+          if (data.isAdmin) {
+            setAuthorized(true);
+            setLoading(false);
+            return;
+          }
+          setError('Token is valid but not an admin token.');
+        } else {
+          setError('Token is invalid.');
+        }
+      } catch (err) {
+        console.error('verify error', err);
+        setError('Server error while verifying token.');
+      }
+
+      try { localStorage.removeItem('adminToken'); } catch (e) {}
+      setLoading(false);
+      setAuthorized(false);
       router.replace('/');
-      return;
     }
 
-    // Optional: you can verify token server-side here by calling an API endpoint.
-    setAuthorized(true);
-    setLoading(false);
+    check();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleLogout() {
@@ -24,7 +54,7 @@ export default function AdminPage() {
     router.push('/');
   }
 
-  if (loading) return <div style={{ padding: 24 }}>Loading...</div>;
+  if (loading) return <div style={{ padding: 24 }}>{error ? error : 'Loading...'}</div>;
   if (!authorized) return null;
 
   return (
@@ -48,12 +78,11 @@ export default function AdminPage() {
       </div>
 
       <section style={{ marginTop: 24 }}>
-        <h2 style={{ marginBottom: 8 }}>Admin Tools (example)</h2>
-        <p style={{ marginTop: 0, color: '#666' }}>
+        <h2>Admin Tools (example)</h2>
+        <p style={{ color: '#666' }}>
           You can add actions here: list users, disable accounts, view logs, etc.
         </p>
 
-        {/* Example placeholder for future admin controls */}
         <div style={{ marginTop: 12, padding: 12, border: '1px dashed #eee', borderRadius: 8 }}>
           <strong>Placeholder:</strong>
           <div style={{ marginTop: 8 }}>
