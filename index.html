@@ -788,6 +788,29 @@
     </footer>
   </div>
 
+  <!-- POP-UP MODAL KONFIRMASI ADMIN KUSTOM (MENYESUAIKAN TEMA UI) -->
+  <div id="adminActionModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass max-w-[320px] w-full rounded-[20px] p-5 relative shadow-2xl text-center space-y-4">
+      <div id="modalIconContainer" class="w-12 h-12 rounded-2xl bg-[#00FFFF]/10 border border-[#00FFFF]/30 flex items-center justify-center text-[#00FFFF] text-xl mx-auto shadow-[0_0_20px_rgba(0,255,255,0.2)]">
+        <i id="modalIcon" class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <h3 id="modalTitle" class="font-display font-semibold text-sm text-white">Konfirmasi Aksi Admin</h3>
+        <p id="modalDesc" class="text-[10px] text-zinc-300 leading-relaxed mt-1.5">
+          Apakah Anda yakin ingin mengeksekusi tindakan ini pada pengguna?
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button onclick="closeAdminModal()" class="w-full py-2.5 rounded-xl bg-white/[.05] border border-white/[.1] text-zinc-300 hover:text-white font-bold text-xs transition">
+          Batal
+        </button>
+        <button id="modalConfirmBtn" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#0891b2] text-black font-bold text-xs shadow hover:opacity-95 transition">
+          Ya, Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFIKASI -->
   <div id="toast" class="toast fixed z-50 bottom-5 left-1/2 glass rounded-[12px] px-4 py-3 text-[10px] text-white shadow-2xl max-w-[calc(100vw-32px)]"></div>
 
@@ -796,6 +819,7 @@
   let isAdmin = false;
   let activeInjectEmail = "";
   let adminUsersList = [];
+  let pendingAdminAction = null;
 
   window.addEventListener("DOMContentLoaded", () => {
     checkExistingSession();
@@ -1030,7 +1054,6 @@
     showToast("Memverifikasi & Memproses Limit Server...");
 
     try {
-      // 1. Validasi & Consume Limit via Server Backend
       const limitRes = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1042,7 +1065,6 @@
       currentUser = limitData.user;
       updateLimitDisplay();
 
-      // 2. Eksekusi API Verifikasi External
       const res = await fetch(`https://restapidhan.vercel.app/api/am?action=verif&apikey=freeapikeydhan26&email=${encodeURIComponent(activeInjectEmail)}&url=${encodeURIComponent(link)}`);
       const json = await res.json();
 
@@ -1187,9 +1209,9 @@
         <td class="p-2.5">${u.dailyLimit} / <span class="text-emerald-400">${u.usedToday}</span></td>
         <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[8px] ${u.status === 'active' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}">${u.status}</span></td>
         <td class="p-2.5 text-center space-x-1">
-          <button onclick="admActionUser('${u.userId}', 'add_limit')" class="px-2 py-1 bg-[#00FFFF]/20 text-[#00FFFF] rounded hover:bg-[#00FFFF]/30" title="Tambah Limit">+L</button>
-          <button onclick="admActionUser('${u.userId}', 'reset_limit')" class="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded hover:bg-yellow-500/30" title="Reset Limit">Res</button>
-          <button onclick="admActionUser('${u.userId}', 'toggle_status')" class="px-2 py-1 bg-red-500/20 text-red-300 rounded hover:bg-red-500/30" title="Toggle Status">Sts</button>
+          <button onclick="promptAdminAction('${u.userId}', 'add_limit', '${escapeAttr(u.username)}')" class="px-2 py-1 bg-[#00FFFF]/20 text-[#00FFFF] rounded hover:bg-[#00FFFF]/30" title="Tambah Limit">+L</button>
+          <button onclick="promptAdminAction('${u.userId}', 'reset_limit', '${escapeAttr(u.username)}')" class="px-2 py-1 bg-yellow-500/20 text-yellow-300 rounded hover:bg-yellow-500/30" title="Reset Limit">Res</button>
+          <button onclick="promptAdminAction('${u.userId}', 'toggle_status', '${escapeAttr(u.username)}')" class="px-2 py-1 bg-red-500/20 text-red-300 rounded hover:bg-red-500/30" title="Toggle Status">Sts</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -1202,8 +1224,45 @@
     renderUserTable(filtered);
   }
 
-  async function admActionUser(userId, actionType) {
-    if (!confirm(`Apakah Anda yakin ingin melakukan tindakan [${actionType}] pada user ini?`)) return;
+  // POP-UP MODAL KUSTOM ADMIN
+  function promptAdminAction(userId, actionType, username) {
+    pendingAdminAction = { userId, actionType };
+    const modal = document.getElementById("adminActionModal");
+    const titleEl = document.getElementById("modalTitle");
+    const descEl = document.getElementById("modalDesc");
+    const iconEl = document.getElementById("modalIcon");
+    const confirmBtn = document.getElementById("modalConfirmBtn");
+
+    if (actionType === 'add_limit') {
+      titleEl.textContent = "Tambah Kuota Limit";
+      descEl.innerHTML = `Tambahkan bonus limit (<b>+5 limit</b>) untuk pengguna <b>${escapeHtml(username)}</b>?`;
+      iconEl.className = "fa-solid fa-plus-circle";
+      confirmBtn.className = "w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#0891b2] text-black font-bold text-xs shadow hover:opacity-95 transition";
+    } else if (actionType === 'reset_limit') {
+      titleEl.textContent = "Reset Penggunaan Harian";
+      descEl.innerHTML = `Reset penggunaan harian (usedToday = 0) untuk pengguna <b>${escapeHtml(username)}</b>?`;
+      iconEl.className = "fa-solid fa-rotate-right";
+      confirmBtn.className = "w-full py-2.5 rounded-xl bg-gradient-to-r from-yellow-400 to-amber-600 text-black font-bold text-xs shadow hover:opacity-95 transition";
+    } else if (actionType === 'toggle_status') {
+      titleEl.textContent = "Ubah Status Akun";
+      descEl.innerHTML = `Ubah status aktif / disable untuk pengguna <b>${escapeHtml(username)}</b>?`;
+      iconEl.className = "fa-solid fa-user-lock";
+      confirmBtn.className = "w-full py-2.5 rounded-xl bg-gradient-to-r from-red-500 to-rose-700 text-white font-bold text-xs shadow hover:opacity-95 transition";
+    }
+
+    modal.classList.remove("hidden");
+    confirmBtn.onclick = executeConfirmedAdminAction;
+  }
+
+  function closeAdminModal() {
+    document.getElementById("adminActionModal").classList.add("hidden");
+    pendingAdminAction = null;
+  }
+
+  async function executeConfirmedAdminAction() {
+    if (!pendingAdminAction) return;
+    const { userId, actionType } = pendingAdminAction;
+    closeAdminModal();
 
     const adminToken = localStorage.getItem("am_admin_token");
     try {
@@ -1228,9 +1287,14 @@
       .replaceAll("<", "&lt;")
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+      .replaceAll('\'', '&#039;');
+  }
+
+  function escapeAttr(value) {
+    return String(value ?? "")
+      .replaceAll("\\", "\\\\")
+      .replaceAll("'", "\\'");
   }
 </script>
 </body>
 </html>
-
