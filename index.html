@@ -727,8 +727,8 @@
             </button>
           </div>
 
-          <!-- STATS -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <!-- STATS (Termasuk Invalid Inject) -->
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
             <div class="admin-stat p-3">
               <div class="section-label">Total Users</div>
               <div id="admTotalUsers" class="font-display font-bold text-[16px] text-white mt-1">0</div>
@@ -744,6 +744,10 @@
             <div class="admin-stat p-3">
               <div class="section-label">Successful Inject</div>
               <div id="admSuccessInject" class="font-display font-bold text-[16px] text-[#00FFFF] mt-1">0</div>
+            </div>
+            <div class="admin-stat p-3 col-span-2 sm:col-span-1">
+              <div class="section-label">Invalid Inject</div>
+              <div id="admInvalidInject" class="font-display font-bold text-[16px] text-red-400 mt-1">0</div>
             </div>
           </div>
 
@@ -1183,6 +1187,7 @@
       document.getElementById("admActiveUsers").textContent = data.activeUsers;
       document.getElementById("admTotalInject").textContent = data.totalInject;
       document.getElementById("admSuccessInject").textContent = data.successInject;
+      document.getElementById("admInvalidInject").textContent = data.totalInvalidInject;
 
       adminUsersList = data.users || [];
       renderUserTable(adminUsersList);
