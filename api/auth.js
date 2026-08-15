@@ -1,19 +1,29 @@
 import { initializeApp, getApps } from 'firebase/app';
-import * as firestore from 'firebase/firestore'; // Trik untuk mencegah bug Vercel "Expected type Query"
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  runTransaction
+} from 'firebase/firestore';
 
 const firebaseConfig = {
   projectId: process.env.FIREBASE_PROJECT_ID,
   clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined
+  privateKey: process.env.FIREBASE_PRIVATE_KEY
+    ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+    : undefined
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-const db = firestore.getFirestore(app);
-const appId = "am-pro-toolkit-v2";
+const db = getFirestore(app);
+const appId = 'am-pro-toolkit-v2';
 
 function generateToken() {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let rand = "";
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let rand = '';
   for (let i = 0; i < 4; i++) {
     rand += chars.charAt(Math.floor(Math.random() * chars.length));
   }
@@ -27,221 +37,47 @@ const getClientIp = (req) => {
 };
 
 export default async function handler(req, res) {
-  // CORS Headers
+  // CORS + Content-Type
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    const { action, username, token } = req.body;
-    const clientIp = getClientIp(req);
-
-    // Konfigurasi Admin dari Environment Variables dengan fallback default
-    const validAdminUser = process.env.ADMIN_USERNAME || 'thanz';
-    const validAdminSecret = process.env.ADMIN_SECRET || 'thanzadmin337';
-
-    // 1. Aksi Login atau Validasi Masuk
-    if (action === 'login') {
-      // Cek apakah yang melakukan login adalah Admin berdasarkan Env
-      if (username === validAdminUser && token === validAdminSecret) {
-        return res.status(200).json({
-          success: true,
-          isAdmin: true,
-          adminToken: validAdminSecret,
-          message: 'Berhasil login sebagai admin.'
-        });
-      }
-
-      // Jika bukan admin, cek login user biasa menggunakan Token database
-      if (!token) {
-        return res.status(400).json({ error: 'Token atau Username & Password admin diperlukan.' });
-      }
-
-      const usersRef = firestore.collection(db, 'artifacts', appId, 'public', 'data', 'users');
-      const q = firestore.query(usersRef, firestore.where('token', '==', token));
-      const querySnapshot = await firestore.getDocs(q);
-
-      if (querySnapshot.empty) {
-        return res.status(401).json({ error: 'Token tidak terdaftar.' });
-      }
-
-      const userDocSnap = querySnapshot.docs[0];
-      const userData = userDocSnap.data();
-
-      if (userData.status !== 'active') {
-        return res.status(403).json({ error: 'Akun Anda telah dinonaktifkan oleh administrator.' });
-      }
-
-      return res.status(200).json({ success: true, user: userData, isAdmin: false });
-    }
-
-    // 2. Aksi Pendaftaran Akun Baru (Register)
-    if (action === 'register') {
-      const usersRef = firestore.collection(db, 'artifacts', appId, 'public', 'data', 'users');
-      
-      // Proteksi 1 Perangkat = 1 Akun berdasarkan IP
-      const ipQuery = firestore.query(usersRef, firestore.where('ip', '==', clientIp));
-      const ipSnapshot = await firestore.getDocs(ipQuery);
-
-      if (!ipSnapshot.empty) {
-        throw new Error('IP_EXISTS');
-      }
-
-      // Generate token baru untuk user
-      let newToken = generateToken();
-      let isUnique = false;
-      let attempts = 0;
-
-      while (!isUnique && attempts < 5) {
-        const checkQuery = firestore.query(usersRef, firestore.where('token', '==', newToken));
-        const checkSnap = await firestore.getDocs(checkQuery);
-        if (checkSnap.empty) {
-          isUnique = true;
-        } else {
-          newToken = generateToken();
-          attempts++;
-        }
-      }
-
-      const newUser = {
-        token: newToken,
-        username: username ? username.trim() : `User_${Math.floor(Math.random() * 1000)}`,
-        ip: clientIp,
-        dailyLimit: 5,
-        usedToday: 0,
-        totalInject: 0,
-        successfulInject: 0,
-        status: 'active',
-        createdAt: Date.now(),
-        lastReset: Date.now()
-      };
-
-      const newUserRef = firestore.doc(usersRef);
-      await firestore.setDoc(newUserRef, newUser);
-
-      return res.status(200).json({ success: true, user: newUser });
-    }
-
-    // 3. Aksi Eksekusi Inject
-    if (action === 'inject') {
-      if (!token) {
-        return res.status(400).json({ error: 'Token diperlukan untuk melakukan inject.' });
-      }
-
-      const usersRef = firestore.collection(db, 'artifacts', appId, 'public', 'data', 'users');
-      const q = firestore.query(usersRef, firestore.where('token', '==', token));
-      const querySnapshot = await firestore.getDocs(q);
-
-      if (querySnapshot.empty) {
-        return res.status(404).json({ error: 'User tidak ditemukan.' });
-      }
-
-      const userDocSnap = querySnapshot.docs[0];
-      const userDocRef = userDocSnap.ref;
-
-      let updatedUser = null;
-
-      await firestore.runTransaction(db, async (transaction) => {
-        const freshSnap = await transaction.get(userDocRef);
-        if (!freshSnap.exists()) throw new Error('User not found.');
-
-        let data = freshSnap.data();
-        if (data.status !== 'active') throw new Error('Akun Anda telah dinonaktifkan.');
-
-        const now = Date.now();
-        const twentyFourHours = 24 * 60 * 60 * 1000;
-
-        if (now - (data.lastReset || 0) >= twentyFourHours) {
-          data.usedToday = 0;
-          data.lastReset = now;
-        }
-
-        if (data.usedToday >= data.dailyLimit) {
-          throw new Error('Batas limit harian Anda telah habis.');
-        }
-
-        data.usedToday += 1;
-        data.totalInject = (data.totalInject || 0) + 1;
-        data.successfulInject = (data.successfulInject || 0) + 1;
-
-        transaction.update(userDocRef, {
-          usedToday: data.usedToday,
-          lastReset: data.lastReset,
-          totalInject: data.totalInject,
-          successfulInject: data.successfulInject
-        });
-
-        updatedUser = data;
-      });
-
-      return res.status(200).json({ success: true, user: updatedUser });
-    }
-
-    return res.status(400).json({ error: 'Aksi tidak dikenali.' });
-
-  } catch (error) {
-    if (error && error.message === 'IP_EXISTS') {
-      return res.status(403).json({ error: 'Perangkat ini sudah pernah mendaftar. (1 Perangkat = 1 Akun).' });
-    }
-    console.error('Auth error:', error);
-    return res.status(500).json({ error: error.message || 'Terjadi kesalahan pada server.' });
-  }
-}  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   try {
     const { action, username, token } = req.body || {};
     const clientIp = getClientIp(req);
-    const usersRef = firestore.collection(db, 'artifacts', appId, 'public', 'data', 'users');
+    const usersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
 
-    // ==========================================
-    // 1. REGISTER USER (DENGAN PROTEKSI IP)
-    // ==========================================
+    // REGISTER
     if (action === 'register') {
       if (!username || typeof username !== 'string') {
         return res.status(400).json({ error: 'Username tidak valid.' });
       }
 
-      // Cek apakah username sudah ada
-      const userQuery = firestore.query(usersRef, firestore.where('username', '==', username));
-      const userSnap = await firestore.getDocs(userQuery);
-      if (!userSnap.empty) {
-        return res.status(400).json({ error: 'Username sudah digunakan, silakan pilih yang lain.' });
-      }
+      const userQuery = query(usersRef, where('username', '==', username));
+      const userSnap = await getDocs(userQuery);
+      if (!userSnap.empty) return res.status(400).json({ error: 'Username sudah digunakan.' });
 
-      const ipSafeStr = (clientIp || 'unknown').replace(/[.#:$[\]]/g, '_'); 
-      const ipRegistryRef = firestore.doc(db, 'artifacts', appId, 'public', 'data', 'registered_ips', ipSafeStr);
-      
+      const ipSafeStr = (clientIp || 'unknown').replace(/[.#:$[\]]/g, '_');
+      const ipRegistryRef = doc(db, 'artifacts', appId, 'public', 'data', 'registered_ips', ipSafeStr);
+
       const newToken = generateToken();
       const userId = `user_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      const newUserRef = firestore.doc(usersRef, userId);
+      const newUserRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', userId);
 
       let createdUser = null;
 
-      await firestore.runTransaction(db, async (transaction) => {
+      await runTransaction(db, async (transaction) => {
         const ipDocSnap = await transaction.get(ipRegistryRef);
         const isLocal = clientIp === 'unknown' || clientIp === '::1' || clientIp === '127.0.0.1';
+        if (ipDocSnap.exists() && !isLocal) throw new Error('IP_EXISTS');
 
-        // Tolak jika IP sudah ada dan bukan local testing
-        if (ipDocSnap.exists() && !isLocal) {
-          throw new Error('IP_EXISTS');
-        }
-
-        // Catat IP
         transaction.set(ipRegistryRef, {
-          userId: userId,
-          username: username,
+          userId,
+          username,
           registeredAt: Date.now(),
           ip: clientIp
         });
@@ -267,46 +103,32 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, user: createdUser, token: newToken });
     }
 
-    // ==========================================
-    // 2. LOGIN USER
-    // ==========================================
+    // LOGIN
     if (action === 'login') {
-      if (!username || !token) {
-        return res.status(400).json({ error: 'Username dan Token wajib diisi.' });
-      }
-      
-      const q = firestore.query(usersRef, firestore.where('username', '==', username), firestore.where('token', '==', token));
-      const snap = await firestore.getDocs(q);
-      
-      if (snap.empty) {
-        return res.status(401).json({ error: 'Username atau Token salah.' });
-      }
-      
+      if (!username || !token) return res.status(400).json({ error: 'Username dan Token wajib diisi.' });
+
+      const q = query(usersRef, where('username', '==', username), where('token', '==', token));
+      const snap = await getDocs(q);
+      if (snap.empty) return res.status(401).json({ error: 'Username atau Token salah.' });
+
       const userData = snap.docs[0].data();
-      if (userData.status !== 'active') {
-        return res.status(403).json({ error: 'Akun Anda telah dinonaktifkan oleh Admin.' });
-      }
-      
+      if (userData.status !== 'active') return res.status(403).json({ error: 'Akun dinonaktifkan.' });
+
       return res.status(200).json({ success: true, user: userData });
     }
 
-    // ==========================================
-    // 3. INJECT ACTION
-    // ==========================================
+    // INJECT
     if (action === 'inject') {
       if (!token) return res.status(400).json({ error: 'Token diperlukan.' });
-      
-      const q = firestore.query(usersRef, firestore.where('token', '==', token));
-      const querySnapshot = await firestore.getDocs(q);
-      
-      if (querySnapshot.empty) {
-        return res.status(401).json({ error: 'Invalid token.' });
-      }
+
+      const q = query(usersRef, where('token', '==', token));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) return res.status(401).json({ error: 'Invalid token.' });
 
       const userDocRef = querySnapshot.docs[0].ref;
       let updatedUser = null;
 
-      await firestore.runTransaction(db, async (transaction) => {
+      await runTransaction(db, async (transaction) => {
         const userDocSnap = await transaction.get(userDocRef);
         if (!userDocSnap.exists()) throw new Error('User not found.');
 
@@ -321,9 +143,7 @@ export default async function handler(req, res) {
           data.lastReset = now;
         }
 
-        if (data.usedToday >= data.dailyLimit) {
-          throw new Error('Your daily inject limit has been reached.');
-        }
+        if (data.usedToday >= data.dailyLimit) throw new Error('Your daily inject limit has been reached.');
 
         data.usedToday += 1;
         data.totalInject = (data.totalInject || 0) + 1;
@@ -343,13 +163,11 @@ export default async function handler(req, res) {
     }
 
     return res.status(400).json({ error: 'Aksi tidak dikenali.' });
-
   } catch (error) {
     if (error && error.message === 'IP_EXISTS') {
       return res.status(403).json({ error: 'Perangkat ini sudah pernah mendaftar. (1 Perangkat = 1 Akun).' });
     }
     console.error('auth API error:', error);
-    // Pastikan selalu mengembalikan JSON
     return res.status(500).json({ error: error && error.message ? `Backend Error: ${error.message}` : 'Terjadi kesalahan pada server.' });
   }
-}
+          }
