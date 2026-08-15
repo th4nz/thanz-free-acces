@@ -1,82 +1,97 @@
-import { initializeApp, getApps } from 'firebase/app';
-import * as firestore from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-const firebaseConfig = {
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined
-};
+export default function AdminPage() {
+  const router = useRouter();
+  const [authorized, setAuthorized] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-const db = firestore.getFirestore(app);
-const appId = "am-pro-toolkit-v2";
-
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    const { action, adminToken, userId, actionType } = req.body;
-
-    const validAdminSecret = process.env.ADMIN_SECRET || 'thanzadmin';
-    if (!adminToken || adminToken !== validAdminSecret) {
-      return res.status(401).json({ error: 'Unauthorized admin access.' });
-    }
-
-    const usersRef = firestore.collection(db, 'artifacts', appId, 'public', 'data', 'users');
-
-    if (action === 'stats') {
-      const querySnapshot = await firestore.getDocs(usersRef);
-      
-      let users = [];
-      let totalUsers = 0;
-      let activeUsers = 0;
-      let totalInject = 0;
-      let successInject = 0;
-
-      querySnapshot.forEach(docSnap => {
-        const u = docSnap.data();
-        totalUsers++;
-        if (u.status === 'active') activeUsers++;
-        totalInject += (u.totalInject || 0);
-        successInject += (u.successfulInject || 0);
-        users.push(u);
-      });
-
-      return res.status(200).json({
-        totalUsers,
-        activeUsers,
-        totalInject,
-        successInject,
-        users
-      });
-    }
-
-    if (action === 'user_action' && userId) {
-      const targetDocRef = firestore.doc(db, 'artifacts', appId, 'public', 'data', 'users', userId);
-      const targetSnap = await firestore.getDoc(targetDocRef);
-
-      if (!targetSnap.exists()) {
-        return res.status(404).json({ error: 'User tidak ditemukan.' });
+  useEffect(() => {
+    async function check() {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
+      if (!token) {
+        router.replace('/');
+        return;
       }
 
-      const userData = targetSnap.data();
+      try {
+        const res = await fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify', token })
+        });
 
-      if (actionType === 'add_limit') {
-        await firestore.updateDoc(targetDocRef, { dailyLimit: (userData.dailyLimit || 5) + 5 });
-      } else if (actionType === 'reset_limit') {
-        await firestore.updateDoc(targetDocRef, { usedToday: 0, lastReset: Date.now() });
-      } else if (actionType === 'toggle_status') {
-        const newStatus = userData.status === 'active' ? 'disabled' : 'active';
-        await firestore.updateDoc(targetDocRef, { status: newStatus });
+        const data = await res.json().catch(() => null);
+
+        if (res.ok && data && data.valid) {
+          if (data.isAdmin) {
+            setAuthorized(true);
+            setLoading(false);
+            return;
+          }
+          setError('Token is valid but not an admin token.');
+        } else {
+          setError('Token is invalid.');
+        }
+      } catch (err) {
+        console.error('verify error', err);
+        setError('Server error while verifying token.');
       }
 
-      return res.status(200).json({ success: true });
+      try { localStorage.removeItem('adminToken'); } catch (e) {}
+      setLoading(false);
+      setAuthorized(false);
+      router.replace('/');
     }
 
-    return res.status(400).json({ error: 'Aksi tidak dikenali.' });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
+    check();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handleLogout() {
+    try { localStorage.removeItem('adminToken'); } catch (e) {}
+    router.push('/');
   }
+
+  if (loading) return <div style={{ padding: 24 }}>{error ? error : 'Loading...'}</div>;
+  if (!authorized) return null;
+
+  return (
+    <div style={{ padding: 20, fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial' }}>
+      <h1>Admin Panel</h1>
+      <p>Welcome, admin. This is a minimal panel. Add controls as needed.</p>
+
+      <div style={{ marginTop: 16 }}>
+        <button
+          onClick={handleLogout}
+          style={{
+            padding: '8px 12px',
+            borderRadius: 6,
+            border: '1px solid #ddd',
+            background: '#fff',
+            cursor: 'pointer'
+          }}
+        >
+          Logout
+        </button>
+      </div>
+
+      <section style={{ marginTop: 24 }}>
+        <h2>Admin Tools (example)</h2>
+        <p style={{ color: '#666' }}>
+          You can add actions here: list users, disable accounts, view logs, etc.
+        </p>
+
+        <div style={{ marginTop: 12, padding: 12, border: '1px dashed #eee', borderRadius: 8 }}>
+          <strong>Placeholder:</strong>
+          <div style={{ marginTop: 8 }}>
+            - Add user management UI<br />
+            - Add analytics or logs viewer<br />
+            - Add server-side verified actions (recommended)
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }
