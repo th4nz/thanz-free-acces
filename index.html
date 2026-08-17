@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#030712" />
-  <meta name="description" content="AM Pro Toolkit — Neon Blue Edition with Credits & Token" />
-  <title>Thanz Generator | ThanzDev</title>
+  <meta name="description" content="AM Pro Toolkit — Neon Blue Edition" />
+  <title>Am Generator | ThanzDev</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
@@ -47,6 +47,8 @@
       --muted: #94a3b8;
       --neon-blue: #06b6d4;
       --neon-bright: #38bdf8;
+      --neon-glow: rgba(56, 189, 248, 0.45);
+      --green: #34d399;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -114,90 +116,83 @@
 
   <div class="w-full max-w-2xl mx-auto flex min-h-[calc(100vh-24px)] sm:min-h-[calc(100vh-40px)] flex-col">
 
-    <!-- HEADER -->
+    <!-- HEADER / TOPBAR -->
     <header class="topbar glass rounded-[16px] px-4 py-3.5 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-3 min-w-0">
         <div class="brand-mark w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0">
           <i class="fa-solid fa-wand-magic-sparkles text-cyan-300 text-sm drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]"></i>
         </div>
         <div class="min-w-0">
-          <div class="font-display font-bold text-[13px] text-white tracking-tight truncate drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">Thanz Generator</div>
-          <div class="text-[9px] text-[#38bdf8] mt-0.5 tracking-wide">AM Pro Toolkit</div>
+          <div class="font-display font-bold text-[13px] text-white tracking-tight truncate drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">Thanz Dev</div>
+          <div class="text-[9px] text-[#38bdf8] mt-0.5 tracking-wide">Alight Motion Toolkit</div>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <a href="/admin.html" class="text-[9px] px-2.5 py-1.5 rounded-full bg-white/[.05] border border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/20 transition">
-          <i class="fa-solid fa-shield-halved mr-1"></i> Admin Panel
-        </a>
+        <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[.03] border border-white/[.06] text-[9px] text-[#7dd3fc]">
+          <span class="status-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          Online
+        </div>
+        <div class="text-[9px] px-2.5 py-1.5 rounded-full bg-cyan-500/[.12] border border-cyan-400/[.25] text-cyan-200 shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+          Free Access
+        </div>
       </div>
     </header>
 
     <!-- UTAMA -->
     <main class="flex-1 flex flex-col justify-center py-5">
       <div class="w-full max-w-md mx-auto">
-        <div class="glass rounded-[16px] overflow-hidden p-4 sm:p-5">
-          
-          <div class="mb-5">
-            <div class="section-label mb-1.5">Alight Motion V1</div>
-            <h2 class="font-display font-bold text-[14px] text-white">Generator Akun Pro</h2>
-            <p id="flowInstruction" class="text-[10px] text-[#94a3b8] mt-1.5 leading-relaxed">
-              Isi email aktif untuk klaim token THNZ, kredit gratis, dan akun Pro Anda.
-            </p>
-          </div>
+        <div class="glass rounded-[16px] overflow-hidden">
 
-          <!-- KONTROL DEVICE BLOCKED / FORM -->
-          <div id="deviceWarning" class="hidden mb-4 p-3 rounded-[11px] bg-red-500/10 border border-red-500/20 text-red-300 text-[11px] text-center">
-            <i class="fa-solid fa-triangle-exclamation mb-1 text-sm"></i><br>
-            Perangkat ini sudah pernah melakukan klaim akun Pro! (1 HP / 1 Akun Terbatas).
-          </div>
+          <!-- KONTEN ALIGHT MOTION -->
+          <div id="viewAM" class="p-4 sm:p-5">
+            <div class="mb-5">
+              <div class="section-label mb-1.5">Alight Motion V1</div>
+              <h2 class="font-display font-bold text-[14px] text-white">Generator Akun Pro</h2>
+              <p id="flowInstruction" class="text-[10px] text-[#94a3b8] mt-1.5 leading-relaxed">
+                Isi email aktif, kirim magic link, lalu verifikasi untuk mendapatkan akun Pro.
+              </p>
+            </div>
 
-          <!-- LANGKAH 1: EMAIL -->
-          <div id="stepEmailBox" class="space-y-3">
-            <div>
-              <label class="block text-[10px] font-medium text-[#bae6fd] mb-1.5">Email Alight Motion</label>
-              <input id="inputEmail" type="email" placeholder="nama@gmail.com" class="px-3.5 py-3 text-[11px]" />
-            </div>
-            <button onclick="handleSendMagicLink()" class="btn btn-primary w-full py-3 text-[11px] font-bold text-white">
-              <i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Magic Link
-            </button>
-          </div>
-
-          <!-- LANGKAH 2: VERIFIKASI -->
-          <div id="stepVerifyBox" class="hidden space-y-3">
-            <div>
-              <label class="block text-[10px] font-medium text-[#bae6fd] mb-1.5">Tautan / Magic Link</label>
-              <input id="inputLink" type="url" placeholder="https://..." class="px-3.5 py-3 text-[11px]" />
-            </div>
-            <div class="grid grid-cols-[1fr_auto] gap-2">
-              <button onclick="handleVerifyLink()" class="btn btn-primary py-3 text-[11px] font-bold text-white">
-                Verifikasi & Generate Token
-              </button>
-              <button onclick="resetAmFlow()" class="btn btn-ghost px-3 text-[#bae6fd]">
-                <i class="fa-solid fa-rotate-left"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- LANGKAH 3: SUKSES -->
-          <div id="stepSuccessBox" class="hidden space-y-3 py-2">
-            <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-lg mb-2 shadow-[0_0_15px_rgba(52,211,153,0.3)]">
-              <i class="fa-solid fa-check"></i>
-            </div>
-            <h3 class="font-bold text-white text-[13px] text-center">Akun Pro Berhasil Diaktifkan!</h3>
-            
-            <div class="result-box p-3 rounded-[11px] space-y-2">
+            <!-- LANGKAH 1: EMAIL -->
+            <div id="stepEmailBox" class="space-y-3">
               <div>
-                <div class="text-[9px] text-[#94a3b8]">Token Unik Anda</div>
-                <div id="resToken" class="font-mono text-[12px] text-cyan-300 font-bold mt-0.5">—</div>
+                <label class="block text-[10px] font-medium text-[#bae6fd] mb-1.5">Email Alight Motion</label>
+                <input id="inputEmail" type="email" placeholder="nama@gmail.com" class="px-3.5 py-3 text-[11px]" />
               </div>
+              <button onclick="handleSendMagicLink()" class="btn btn-primary w-full py-3 text-[11px] font-bold text-white">
+                <i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Magic Link
+              </button>
+            </div>
+
+            <!-- LANGKAH 2: VERIFIKASI LINK -->
+            <div id="stepVerifyBox" class="hidden space-y-3">
               <div>
-                <div class="text-[9px] text-[#94a3b8]">Sisa Kredit Akun</div>
-                <div id="resCredits" class="font-mono text-[12px] text-emerald-400 font-bold mt-0.5">5 Kredit (Reset 24 Jam)</div>
+                <label class="block text-[10px] font-medium text-[#bae6fd] mb-1.5">Tautan / Magic Link</label>
+                <input id="inputLink" type="url" placeholder="https://..." class="px-3.5 py-3 text-[11px]" />
+              </div>
+              <div class="grid grid-cols-[1fr_auto] gap-2">
+                <button onclick="handleVerifyLink()" class="btn btn-primary py-3 text-[11px] font-bold text-white">
+                  Verifikasi Link
+                </button>
+                <button onclick="resetAmFlow()" class="btn btn-ghost px-3 text-[#bae6fd]">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
               </div>
             </div>
 
-            <button onclick="resetAmFlow()" class="btn btn-ghost w-full py-2.5 text-[10px]">Selesai</button>
+            <!-- LANGKAH 3: HASIL -->
+            <div id="stepSuccessBox" class="hidden space-y-3 text-center py-2">
+              <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-lg mb-2 shadow-[0_0_15px_rgba(52,211,153,0.3)]">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <h3 class="font-bold text-white text-[13px]">Akun Pro Berhasil Diproses!</h3>
+              <div class="result-box p-3 rounded-[11px] text-left">
+                <div class="text-[9px] text-[#94a3b8]">Kode Order</div>
+                <div id="codeOrder" class="font-mono text-[12px] text-cyan-300 font-bold mt-0.5">—</div>
+              </div>
+              <button onclick="resetAmFlow()" class="btn btn-ghost w-full py-2.5 text-[10px]">Buat Lagi</button>
+            </div>
           </div>
 
         </div>
@@ -207,11 +202,12 @@
     <!-- FOOTER -->
     <footer class="text-center pb-2 pt-1">
       <div class="text-[9px] text-[#64748b]">
-        Thanz Generator <span class="mx-1 text-[#38bdf8]/55">•</span> Secure Token System <span class="mx-1 text-[#38bdf8]/55">•</span> ThanzDev
+        Am Generator <span class="mx-1 text-[#38bdf8]/55">•</span> Free Tools <span class="mx-1 text-[#38bdf8]/55">•</span> ThanzDev
       </div>
     </footer>
   </div>
 
+  <!-- TOAST NOTIFICATION -->
   <div id="toast" class="toast fixed z-50 bottom-5 left-1/2 glass rounded-[12px] px-4 py-3 text-[10px] text-white shadow-2xl max-w-[calc(100vw-32px)]"></div>
 
   <script src="app.js"></script>
