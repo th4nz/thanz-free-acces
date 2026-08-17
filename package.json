@@ -1,17 +1,13 @@
 {
-  "name": "am-pro-toolkit",
-  "version": "2.5.0",
+  "name": "alight-motion-activation",
+  "version": "1.2.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+  "type": "module",
+  "engines": {
+    "node": ">=20"
   },
-  "dependencies": {
-    "next": "^13.4.10",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "firebase": "^11.6.1",
-    "firebase-admin": "^12.0.0"
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check app.js && node --check api/_upstream.js && node --check api/bulk-status.js"
   }
 }

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#030712" />
+  <meta name="description" content="AM Pro Toolkit — Neon Blue Edition" />
+  <title>Am Generator | ThanzDev</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+          },
+          colors: {
+            neon: {
+              300: '#67e8f9',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0284c7'
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --bg: #030712;
+      --panel: rgba(10, 20, 35, 0.78);
+      --panel-soft: rgba(255, 255, 255, 0.03);
+      --line: rgba(34, 211, 238, 0.22);
+      --line-soft: rgba(34, 211, 238, 0.08);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --neon-blue: #06b6d4;
+      --neon-bright: #38bdf8;
+      --neon-glow: rgba(56, 189, 248, 0.45);
+      --green: #34d399;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { scroll-behavior: smooth; background: var(--bg); }
+    body {
+      margin: 0; min-height: 100vh; overflow-x: hidden; color: var(--text);
+      background: radial-gradient(circle at 15% 10%, rgba(6, 182, 212, 0.18), transparent 30%),
+                  radial-gradient(circle at 85% 90%, rgba(56, 189, 248, 0.12), transparent 35%), var(--bg);
+      font-family: Inter, sans-serif;
+    }
+
+    .ambient {
+      position: fixed; width: 380px; height: 380px; border-radius: 50%;
+      pointer-events: none; z-index: -1; filter: blur(80px); opacity: 0.55;
+    }
+    .ambient.one { left: -160px; top: 50px; background: rgba(6, 182, 212, 0.28); }
+    .ambient.two { right: -170px; bottom: 60px; background: rgba(56, 189, 248, 0.22); }
+
+    .glass {
+      background: var(--panel); border: 1px solid var(--line);
+      backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45), 0 0 25px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .topbar { box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35), 0 0 20px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+    .brand-mark { background: linear-gradient(145deg, rgba(6, 182, 212, 0.3), rgba(6, 182, 212, 0.08)); border: 1px solid rgba(56, 189, 248, 0.35); box-shadow: 0 0 20px rgba(6, 182, 212, 0.35); }
+    .status-dot { box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.08), 0 0 12px rgba(52, 211, 153, 0.55); }
+
+    input {
+      width: 100%; color: #f8fafc !important; background: rgba(5, 12, 24, 0.85) !important;
+      border: 1px solid rgba(56, 189, 248, 0.2) !important; border-radius: 11px !important; outline: none; transition: .2s ease;
+    }
+    input::placeholder { color: #64748b; }
+    input:hover { border-color: rgba(56, 189, 248, 0.4) !important; }
+    input:focus { border-color: var(--neon-bright) !important; box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25), 0 0 20px rgba(6, 182, 212, 0.4) !important; }
+
+    .btn { border-radius: 11px; transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease; position: relative; }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: linear-gradient(135deg, #06b6d4, #0284c7); border: 1px solid rgba(125, 211, 252, 0.4);
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4), 0 0 25px rgba(6, 182, 212, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #38bdf8, #0369a1); transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(6, 182, 212, 0.6), 0 0 35px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .btn-ghost { background: rgba(255, 255, 255, 0.035); border: 1px solid rgba(56, 189, 248, 0.15); color: #bae6fd; box-shadow: 0 0 10px rgba(6, 182, 212, 0.05); }
+    .btn-ghost:hover { color: white; background: rgba(6, 182, 212, 0.15); border-color: rgba(56, 189, 248, 0.35); }
+
+    .section-label { color: #38bdf8; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; text-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+    .result-box { background: rgba(5, 12, 24, 0.8); border: 1px solid rgba(56, 189, 248, 0.2); box-shadow: inset 0 0 15px rgba(6, 182, 212, 0.08); }
+
+    .toast {
+      transform: translate(-50%, 14px); opacity: 0; pointer-events: none; transition: .25s ease;
+      background: rgba(10, 20, 35, 0.95); border: 1px solid rgba(56, 189, 248, 0.35);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(6, 182, 212, 0.3);
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+
+<body class="min-h-screen px-3 py-3 sm:px-5 sm:py-5">
+  <div class="ambient one"></div>
+  <div class="ambient two"></div>
+
+  <div class="w-full max-w-2xl mx-auto flex min-h-[calc(100vh-24px)] sm:min-h-[calc(100vh-40px)] flex-col">
+
+    <!-- HEADER / TOPBAR -->
+    <header class="topbar glass rounded-[16px] px-4 py-3.5 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="brand-mark w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0">
+          <i class="fa-solid fa-wand-magic-sparkles text-cyan-300 text-sm drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="font-display font-bold text-[13px] text-white tracking-tight truncate drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">Thanz Dev</div>
+          <div class="text-[9px] text-[#38bdf8] mt-0.5 tracking-wide">Alight Motion Toolkit</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[.03] border border-white/[.06] text-[9px] text-[#7dd3fc]">
+          <span class="status-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          Online
+        </div>
+        <div class="text-[9px] px-2.5 py-1.5 rounded-full bg-cyan-500/[.12] border border-cyan-400/[.25] text-cyan-200 shadow-[0_0_10px_rgba(6,182,212,0.2)]">
+          Free Access
+        </div>
+      </div>
+    </header>
+
+    <!-- UTAMA -->
+    <main class="flex-1 flex flex-col justify-center py-5">
+      <div class="w-full max-w-md mx-auto">
+        <div class="glass rounded-[16px] overflow-hidden">
+
+          <!-- KONTEN ALIGHT MOTION -->
+          <div id="viewAM" class="p-4 sm:p-5">
+            <div class="mb-5">
+              <div class="section-label mb-1.5">Alight Motion V1</div>
+              <h2 class="font-display font-bold text-[14px] text-white">Generator Akun Pro</h2>
+              <p id="flowInstruction" class="text-[10px] text-[#94a3b8] mt-1.5 leading-relaxed">
+                Isi email aktif, kirim magic link, lalu verifikasi untuk mendapatkan akun Pro.
+              </p>
+            </div>
+
+            <!-- LANGKAH 1: EMAIL -->
+            <div id="stepEmailBox" class="space-y-3">
+              <div>
+                <label class="block text-[10px] font-medium text-[#bae6fd] mb-1.5">Email Alight Motion</label>
+                <input id="inputEmail" type="email" placeholder="nama@gmail.com" class="px-3.5 py-3 text-[11px]" />
+              </div>
+              <button onclick="handleSendMagicLink()" class="btn btn-primary w-full py-3 text-[11px] font-bold text-white">
+                <i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Magic Link
+              </button>
+            </div>
+
+            <!-- LANGKAH 2: VERIFIKASI LINK -->
+            <div id="stepVerifyBox" class="hidden space-y-3">
+              <div>
+                <label class="block text-[10px] font-medium text-[#bae6fd] mb-1.5">Tautan / Magic Link</label>
+                <input id="inputLink" type="url" placeholder="https://..." class="px-3.5 py-3 text-[11px]" />
+              </div>
+              <div class="grid grid-cols-[1fr_auto] gap-2">
+                <button onclick="handleVerifyLink()" class="btn btn-primary py-3 text-[11px] font-bold text-white">
+                  Verifikasi Link
+                </button>
+                <button onclick="resetAmFlow()" class="btn btn-ghost px-3 text-[#bae6fd]">
+                  <i class="fa-solid fa-rotate-left"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- LANGKAH 3: HASIL -->
+            <div id="stepSuccessBox" class="hidden space-y-3 text-center py-2">
+              <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-lg mb-2 shadow-[0_0_15px_rgba(52,211,153,0.3)]">
+                <i class="fa-solid fa-check"></i>
+              </div>
+              <h3 class="font-bold text-white text-[13px]">Akun Pro Berhasil Diproses!</h3>
+              <div class="result-box p-3 rounded-[11px] text-left">
+                <div class="text-[9px] text-[#94a3b8]">Kode Order</div>
+                <div id="codeOrder" class="font-mono text-[12px] text-cyan-300 font-bold mt-0.5">—</div>
+              </div>
+              <button onclick="resetAmFlow()" class="btn btn-ghost w-full py-2.5 text-[10px]">Buat Lagi</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center pb-2 pt-1">
+      <div class="text-[9px] text-[#64748b]">
+        Am Generator <span class="mx-1 text-[#38bdf8]/55">•</span> Free Tools <span class="mx-1 text-[#38bdf8]/55">•</span> ThanzDev
+      </div>
+    </footer>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast fixed z-50 bottom-5 left-1/2 glass rounded-[12px] px-4 py-3 text-[10px] text-white shadow-2xl max-w-[calc(100vw-32px)]"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
