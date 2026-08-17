@@ -1,7 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
   let currentEmail = "";
-  let amStep = 1;
   let inboxPollTimer = null;
+
+  // Generate / Ambil Device ID unik dari browser HP user
+  let deviceId = localStorage.getItem("dravn_device_id");
+  if (!deviceId) {
+    deviceId = "DEV-" + Math.random().toString(36).substring(2, 10).toUpperCase() + Date.now().toString(36);
+    localStorage.setItem("dravn_device_id", deviceId);
+  }
+
+  // Cek apakah device sudah pernah klaim
+  if (localStorage.getItem("dravn_claimed_status") === "true") {
+    const emailBox = document.getElementById("stepEmailBox");
+    const warning = document.getElementById("deviceWarning");
+    if (emailBox) emailBox.classList.add("hidden");
+    if (warning) warning.classList.remove("hidden");
+  }
 
   function showToast(message) {
     const toast = document.getElementById("toast");
@@ -36,16 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error(result.message || "Gagal mengirim magic link.");
       }
 
-      amStep = 2;
-      const stepEmailBox = document.getElementById("stepEmailBox");
-      const stepVerifyBox = document.getElementById("stepVerifyBox");
-      const flowInstruction = document.getElementById("flowInstruction");
-
-      if (stepEmailBox) stepEmailBox.classList.add("hidden");
-      if (stepVerifyBox) stepVerifyBox.classList.remove("hidden");
-      if (flowInstruction) {
-        flowInstruction.textContent = `Magic link terkirim ke ${email}. Cek manual atau tunggu otomatis.`;
-      }
+      document.getElementById("stepEmailBox").classList.add("hidden");
+      document.getElementById("stepVerifyBox").classList.remove("hidden");
+      document.getElementById("flowInstruction").textContent = `Magic link terkirim ke ${email}.`;
       showToast("Magic link berhasil dikirim!");
 
       startInboxPolling(email);
@@ -84,9 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           }
         }
-      } catch {
-        // Abaikan error background polling
-      }
+      } catch {}
     }, 4000);
   }
 
@@ -95,17 +100,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const link = linkInput ? linkInput.value.trim() : "";
 
     if (!link) {
-      showToast("Masukkan tautan / magic link terlebih dahulu.");
+      showToast("Masukkan magic link terlebih dahulu.");
       return;
     }
 
-    showToast("Memverifikasi akun Pro...");
+    showToast("Memverifikasi & Mendaftarkan akun...");
 
     try {
       const response = await fetch("/api/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: currentEmail, link })
+        body: JSON.stringify({ email: currentEmail, link, deviceId })
       });
       const result = await response.json();
 
@@ -113,45 +118,22 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error(result.message || "Verifikasi gagal.");
       }
 
-      amStep = 3;
       clearInterval(inboxPollTimer);
+      localStorage.setItem("dravn_claimed_status", "true");
 
-      const stepVerifyBox = document.getElementById("stepVerifyBox");
-      const stepSuccessBox = document.getElementById("stepSuccessBox");
-      const codeOrder = document.getElementById("codeOrder");
-      const flowInstruction = document.getElementById("flowInstruction");
-
-      if (stepVerifyBox) stepVerifyBox.classList.add("hidden");
-      if (stepSuccessBox) stepSuccessBox.classList.remove("hidden");
-      if (codeOrder) {
-        codeOrder.textContent = result.data?.order_id || result.data?.code || "SUCCESS-AM-PRO";
-      }
-      if (flowInstruction) flowInstruction.textContent = "Akun Alight Motion berhasil menjadi Pro!";
-      showToast("Akun Berhasil Diproses!");
+      document.getElementById("stepVerifyBox").classList.add("hidden");
+      document.getElementById("stepSuccessBox").classList.remove("hidden");
+      
+      document.getElementById("resToken").textContent = result.data?.thnz_token || "THNZ-ERR";
+      document.getElementById("resCredits").textContent = `${result.data?.credits || 5} Kredit Tersedia`;
+      document.getElementById("flowInstruction").textContent = "Akun sukses terdaftar dengan token unik!";
+      showToast("Berhasil! Token & Kredit aktif.");
     } catch (err) {
-      showToast(err.message || "Gagal memverifikasi tautan.");
+      showToast(err.message || "Gagal memverifikasi.");
     }
   };
 
   window.resetAmFlow = function () {
-    amStep = 1;
-    currentEmail = "";
-    clearInterval(inboxPollTimer);
-
-    const inputEmail = document.getElementById("inputEmail");
-    const inputLink = document.getElementById("inputLink");
-    const stepSuccessBox = document.getElementById("stepSuccessBox");
-    const stepVerifyBox = document.getElementById("stepVerifyBox");
-    const stepEmailBox = document.getElementById("stepEmailBox");
-    const flowInstruction = document.getElementById("flowInstruction");
-
-    if (inputEmail) inputEmail.value = "";
-    if (inputLink) inputLink.value = "";
-    if (stepSuccessBox) stepSuccessBox.classList.add("hidden");
-    if (stepVerifyBox) stepVerifyBox.classList.add("hidden");
-    if (stepEmailBox) stepEmailBox.classList.remove("hidden");
-    if (flowInstruction) {
-      flowInstruction.textContent = "Isi email aktif, kirim magic link, lalu verifikasi untuk mendapatkan akun Pro.";
-    }
+    location.reload();
   };
 });
