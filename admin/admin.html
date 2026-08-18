@@ -1,1 +1,214 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Admin Portal | ThanzDev</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+      }
+    }
+  }
+};
+</script>
+
+<style>
+:root {
+  --bg:#000308;
+  --panel:rgba(2,12,24,.82);
+  --line:rgba(0,255,255,.22);
+  --text:#f8fafc;
+  --neon-cyan:#00FFFF;
+}
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+  color:var(--text); background:radial-gradient(circle at 15% 10%,rgba(0,255,255,.16),transparent 30%), #000308;
+  font-family:Inter,sans-serif; padding:16px;
+}
+input { width:100%; color:#f8fafc!important; background:rgba(0,5,12,.85)!important; border:1px solid rgba(0,255,255,.2)!important; border-radius:11px!important; outline:none; transition:.2s ease; }
+input:focus { border-color:#00FFFF!important; box-shadow:0 0 0 3px rgba(0,255,255,.2); }
+.glass { background:var(--panel); border:1px solid var(--line); backdrop-filter:blur(24px); box-shadow:0 22px 60px rgba(0,0,0,.5); }
+.btn { border-radius:11px; transition:.18s ease; cursor:pointer; }
+.btn-primary { background:linear-gradient(135deg,#00FFFF,#0891b2); color:#000308; border:1px solid rgba(0,255,255,.6); font-weight:700; }
+.section-label { color:#00FFFF; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; }
+</style>
+</head>
+<body class="w-full max-w-md mx-auto">
+
+<div class="glass w-full rounded-[20px] p-6 shadow-2xl">
+    <div class="text-center mb-6">
+        <div class="section-label mb-1">Secure Control Panel</div>
+        <h1 class="font-display font-bold text-xl text-white">🔐 Admin Portal</h1>
+    </div>
+
+    <!-- 1. LOGIN ADMIN -->
+    <div id="adminLoginView" class="space-y-4">
+        <div>
+            <label class="block text-[10px] font-medium text-cyan-200 mb-1">Username Admin</label>
+            <input type="text" id="adminUser" placeholder="thanz" class="px-3.5 py-3 text-xs">
+        </div>
+        <div>
+            <label class="block text-[10px] font-medium text-cyan-200 mb-1">Password Admin</label>
+            <input type="password" id="adminPass" placeholder="thanz 337" class="px-3.5 py-3 text-xs">
+        </div>
+        <button id="adminLoginSubmit" class="btn btn-primary w-full py-3 text-xs shadow-lg">Login Admin</button>
+        <a href="/" class="block text-[10px] text-slate-400 hover:text-white pt-2 text-center">← Kembali ke Beranda Utama</a>
+    </div>
+
+    <!-- 2. DASHBOARD ADMIN -->
+    <div id="adminDashboardView" class="hidden space-y-4">
+        <div class="flex justify-between items-center bg-white/[.04] p-3 rounded-[12px] border border-white/[.08]">
+            <span class="text-xs font-bold text-cyan-300">Status: Admin Aktif</span>
+            <button id="adminLogout" class="px-2.5 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 text-[10px] font-bold cursor-pointer">Logout</button>
+        </div>
+
+        <div class="p-3.5 rounded-[12px] bg-white/[.03] border border-white/[.06] space-y-2">
+            <p class="text-[10px] font-bold text-slate-300 uppercase">Kontrol Perangkat (Device Lock)</p>
+            <div class="flex justify-between items-center text-xs">
+                <span id="statDeviceLock" class="text-amber-400 text-[11px] font-medium">-</span>
+                <button id="resetDeviceLockBtn" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-bold text-[10px] cursor-pointer">Reset Lock</button>
+            </div>
+        </div>
+
+        <div class="p-3.5 rounded-[12px] bg-white/[.03] border border-white/[.06] space-y-2">
+            <p class="text-[10px] font-bold text-slate-300 uppercase">Daftar Akun & Reset Limit Inject</p>
+            <div id="userListContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                <!-- User list -->
+            </div>
+        </div>
+
+        <a href="/" class="block text-[10px] text-slate-400 hover:text-white pt-2 text-center">← Kembali ke Beranda Utama</a>
+    </div>
+
+    <div id="errorMsg" class="hidden p-3 mt-3 rounded-[10px] bg-rose-500/20 text-rose-300 text-[10px] text-center font-semibold"></div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    const adminLoginView = document.getElementById('adminLoginView');
+    const adminDashboardView = document.getElementById('adminDashboardView');
+    const adminUserField = document.getElementById('adminUser');
+    const adminPassField = document.getElementById('adminPass');
+    const adminLoginSubmit = document.getElementById('adminLoginSubmit');
+    const adminLogout = document.getElementById('adminLogout');
+    const statDeviceLock = document.getElementById('statDeviceLock');
+    const userListContainer = document.getElementById('userListContainer');
+    const resetDeviceLockBtn = document.getElementById('resetDeviceLockBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    function showError(text) {
+        errorMsg.textContent = text;
+        errorMsg.classList.remove('hidden');
+    }
+
+    function checkAdminSession() {
+        if (sessionStorage.getItem('am_admin_logged') === 'true') {
+            adminLoginView.classList.add('hidden');
+            adminDashboardView.classList.remove('hidden');
+            renderAdminDashboard();
+        } else {
+            adminDashboardView.classList.add('hidden');
+            adminLoginView.classList.remove('hidden');
+        }
+    }
+
+    adminLoginSubmit.addEventListener('click', () => {
+        const u = adminUserField.value.trim();
+        const p = adminPassField.value.trim();
+        if (u === 'thanz' && p === 'thanz 337') {
+            sessionStorage.setItem('am_admin_logged', 'true');
+            errorMsg.classList.add('hidden');
+            checkAdminSession();
+        } else {
+            showError('Username atau Password Admin Salah!');
+        }
+    });
+
+    adminLogout.addEventListener('click', () => {
+        sessionStorage.removeItem('am_admin_logged');
+        checkAdminSession();
+        adminUserField.value = '';
+        adminPassField.value = '';
+    });
+
+    function renderAdminDashboard() {
+        const isRegLocked = localStorage.getItem('am_device_registered') === 'true';
+        statDeviceLock.textContent = isRegLocked ? "Terkunci (Pernah mendaftar)" : "Terbuka (Bisa daftar)";
+
+        let users = JSON.parse(localStorage.getItem('am_users') || '{}');
+        let userInjects = JSON.parse(localStorage.getItem('am_user_injects') || '{}');
+        
+        userListContainer.innerHTML = '';
+        const usernames = Object.keys(users);
+
+        if (usernames.length === 0) {
+            userListContainer.innerHTML = '<p class="text-[11px] text-slate-500 text-center py-2">Belum ada user terdaftar.</p>';
+            return;
+        }
+
+        usernames.forEach(username => {
+            const lastInject = userInjects[username];
+            let statusText = "Kredit Tersedia";
+            let isLimited = false;
+
+            if (lastInject) {
+                const diffHours = (new Date().getTime() - parseInt(lastInject)) / (1000 * 60 * 60);
+                if (diffHours < 24) {
+                    statusText = `Cooldown (~${Math.ceil(24 - diffHours)}j)`;
+                    isLimited = true;
+                }
+            }
+
+            const row = document.createElement('div');
+            row.className = "flex items-center justify-between bg-white/[.04] p-2.5 rounded-[10px] text-xs";
+            row.innerHTML = `
+                <div>
+                    <p class="font-bold text-white text-[11px]">${username}</p>
+                    <p class="${isLimited ? 'text-amber-400' : 'text-emerald-400'} text-[9px] mt-0.5">${statusText}</p>
+                </div>
+                <button onclick="resetUserLimit('${username}')" class="px-2 py-1 rounded bg-rose-500/20 text-rose-300 font-bold hover:bg-rose-500/30 cursor-pointer text-[10px]">Reset Limit</button>
+            `;
+            userListContainer.appendChild(row);
+        });
+    }
+
+    window.resetUserLimit = function(username) {
+        let userInjects = JSON.parse(localStorage.getItem('am_user_injects') || '{}');
+        if (userInjects[username]) {
+            delete userInjects[username];
+            localStorage.setItem('am_user_injects', JSON.stringify(userInjects));
+            alert(`Limit inject untuk user "${username}" berhasil direset!`);
+            renderAdminDashboard();
+        } else {
+            alert(`User "${username}" sedang tidak dalam masa cooldown.`);
+        }
+    };
+
+    resetDeviceLockBtn.addEventListener('click', () => {
+        localStorage.removeItem('am_device_registered');
+        alert('Berhasil! Kunci registrasi device pada browser ini telah dilepas.');
+        renderAdminDashboard();
+    });
+
+    checkAdminSession();
+})();
+</script>
+</body>
+</html>
 
