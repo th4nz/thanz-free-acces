@@ -3,7 +3,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ status: false, error: 'Method Not Allowed' });
     }
 
-    const { email } = req.body;
+    const { email, magicLink } = req.body;
     // Mengambil dari Vercel Environment Variables
     const API_BASE = process.env.API_BASE;
     const API_KEY = process.env.API_KEY;
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const targetUrl = `${API_BASE}/api/am?action=send&apikey=${API_KEY}&email=${encodeURIComponent(email)}`;
+        const targetUrl = `${API_BASE}/api/am?action=verif&apikey=${API_KEY}&email=${encodeURIComponent(email)}&url=${encodeURIComponent(magicLink)}`;
         const response = await fetch(targetUrl);
         const data = await response.json();
         return res.status(200).json(data);
