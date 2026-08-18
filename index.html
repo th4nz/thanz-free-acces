@@ -1,215 +1,463 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#030712" />
-  <meta name="description" content="AM Pro Toolkit — Neon Blue Edition" />
-  <title>Am Generator | ThanzDev</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>AM Pro Toolkit | ThanzDev</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Permanent+Marker&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
-          },
-          colors: {
-            neon: {
-              300: '#67e8f9',
-              400: '#22d3ee',
-              500: '#06b6d4',
-              600: '#0284c7'
-            }
-          }
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        marker: ['Permanent Marker', 'cursive', 'sans-serif']
+      },
+      colors: {
+        cyanx: {
+          400: '#22d3ee',
+          500: '#06b6d4',
+          600: '#0891b2',
+          700: '#0e7490'
         }
       }
-    };
-  </script>
-
-  <style>
-    :root {
-      --bg: #030712;
-      --panel: rgba(10, 20, 35, 0.78);
-      --panel-soft: rgba(255, 255, 255, 0.03);
-      --line: rgba(34, 211, 238, 0.22);
-      --line-soft: rgba(34, 211, 238, 0.08);
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --neon-blue: #06b6d4;
-      --neon-bright: #38bdf8;
-      --neon-glow: rgba(56, 189, 248, 0.45);
-      --green: #34d399;
     }
+  }
+};
+</script>
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html { scroll-behavior: smooth; background: var(--bg); }
-    body {
-      margin: 0; min-height: 100vh; overflow-x: hidden; color: var(--text);
-      background: radial-gradient(circle at 15% 10%, rgba(6, 182, 212, 0.18), transparent 30%),
-                  radial-gradient(circle at 85% 90%, rgba(56, 189, 248, 0.12), transparent 35%), var(--bg);
-      font-family: Inter, sans-serif;
-    }
+<style>
+:root {
+  --bg:#000308;
+  --panel:rgba(2,12,24,.82);
+  --panel-soft:rgba(0,255,255,.03);
+  --line:rgba(0,255,255,.22);
+  --line-soft:rgba(0,255,255,.08);
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --neon-cyan:#00FFFF;
+  --green:#34d399;
+}
 
-    .ambient {
-      position: fixed; width: 380px; height: 380px; border-radius: 50%;
-      pointer-events: none; z-index: -1; filter: blur(80px); opacity: 0.55;
-    }
-    .ambient.one { left: -160px; top: 50px; background: rgba(6, 182, 212, 0.28); }
-    .ambient.two { right: -170px; bottom: 60px; background: rgba(56, 189, 248, 0.22); }
-
-    .glass {
-      background: var(--panel); border: 1px solid var(--line);
-      backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%);
-      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45), 0 0 25px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-    .topbar { box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35), 0 0 20px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08); }
-    .brand-mark { background: linear-gradient(145deg, rgba(6, 182, 212, 0.3), rgba(6, 182, 212, 0.08)); border: 1px solid rgba(56, 189, 248, 0.35); box-shadow: 0 0 20px rgba(6, 182, 212, 0.35); }
-    .status-dot { box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.08), 0 0 12px rgba(52, 211, 153, 0.55); }
-
-    input {
-      width: 100%; color: #f8fafc !important; background: rgba(5, 12, 24, 0.85) !important;
-      border: 1px solid rgba(56, 189, 248, 0.2) !important; border-radius: 11px !important; outline: none; transition: .2s ease;
-    }
-    input::placeholder { color: #64748b; }
-    input:hover { border-color: rgba(56, 189, 248, 0.4) !important; }
-    input:focus { border-color: var(--neon-bright) !important; box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25), 0 0 20px rgba(6, 182, 212, 0.4) !important; }
-
-    .btn { border-radius: 11px; transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease; position: relative; }
-    .btn:active { transform: scale(0.98); }
-    .btn-primary {
-      background: linear-gradient(135deg, #06b6d4, #0284c7); border: 1px solid rgba(125, 211, 252, 0.4);
-      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4), 0 0 25px rgba(6, 182, 212, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    }
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #38bdf8, #0369a1); transform: translateY(-1px);
-      box-shadow: 0 6px 22px rgba(6, 182, 212, 0.6), 0 0 35px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    }
-    .btn-ghost { background: rgba(255, 255, 255, 0.035); border: 1px solid rgba(56, 189, 248, 0.15); color: #bae6fd; box-shadow: 0 0 10px rgba(6, 182, 212, 0.05); }
-    .btn-ghost:hover { color: white; background: rgba(6, 182, 212, 0.15); border-color: rgba(56, 189, 248, 0.35); }
-
-    .section-label { color: #38bdf8; font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; text-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
-    .result-box { background: rgba(5, 12, 24, 0.8); border: 1px solid rgba(56, 189, 248, 0.2); box-shadow: inset 0 0 15px rgba(6, 182, 212, 0.08); }
-
-    .toast {
-      transform: translate(-50%, 14px); opacity: 0; pointer-events: none; transition: .25s ease;
-      background: rgba(10, 20, 35, 0.95); border: 1px solid rgba(56, 189, 248, 0.35);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(6, 182, 212, 0.3);
-    }
-    .toast.show { transform: translate(-50%, 0); opacity: 1; }
-    .hidden { display: none !important; }
-  </style>
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior:smooth; background:var(--bg); }
+body {
+  margin:0; min-height:100vh; overflow-x:hidden; color:var(--text);
+  background: radial-gradient(circle at 15% 10%,rgba(0,255,255,.16),transparent 30%), radial-gradient(circle at 85% 90%,rgba(0,200,255,.12),transparent 35%), var(--bg);
+  font-family:Inter,sans-serif;
+}
+input, select { width:100%; color:#f8fafc!important; background:rgba(0,5,12,.85)!important; border:1px solid rgba(0,255,255,.2)!important; border-radius:11px!important; outline:none; transition:.2s ease; }
+input::placeholder { color:#64748b; }
+input:focus, select:focus { border-color:#00FFFF!important; box-shadow:0 0 0 3px rgba(0,255,255,.2), 0 0 20px rgba(0,255,255,.4)!important; }
+.glass { background:var(--panel); border:1px solid var(--line); backdrop-filter:blur(24px) saturate(140%); box-shadow:0 22px 60px rgba(0,0,0,.5), 0 0 25px rgba(0,255,255,.1), inset 0 1px 0 rgba(255,255,255,.08); }
+.glass-soft { background:var(--panel-soft); border:1px solid var(--line-soft); backdrop-filter:blur(16px); }
+.topbar { box-shadow:0 16px 45px rgba(0,0,0,.35), 0 0 20px rgba(0,255,255,.12), inset 0 1px 0 rgba(255,255,255,.08); }
+.brand-mark { background:linear-gradient(145deg,rgba(0,255,255,.3),rgba(0,255,255,.08)); border:1px solid rgba(0,255,255,.4); box-shadow:0 0 20px rgba(0,255,255,.35); }
+.status-dot { box-shadow:0 0 0 3px rgba(52,211,153,.08), 0 0 12px rgba(52,211,153,.55); }
+.btn { border-radius:11px; transition:all .18s ease; position:relative; cursor:pointer; }
+.btn:active { transform:scale(.98); }
+.btn-primary { background:linear-gradient(135deg,#00FFFF,#0891b2); color:#000308; border:1px solid rgba(0,255,255,.6); box-shadow:0 4px 15px rgba(0,255,255,.35), 0 0 25px rgba(0,255,255,.25); font-weight:700; }
+.btn-primary:hover { background:linear-gradient(135deg,#33ffff,#06b6d4); box-shadow:0 6px 22px rgba(0,255,255,.6); }
+.btn-success { background:linear-gradient(135deg,#059669,#047857); color:white; border:1px solid rgba(110,231,183,.3); box-shadow:0 4px 15px rgba(5,150,105,.35); }
+.btn-ghost { background:rgba(255,255,255,.035); border:1px solid rgba(0,255,255,.15); color:#a5f3fc; }
+.auth-tabs { padding:4px; background:rgba(255,255,255,.025); border:1px solid rgba(0,255,255,.15); }
+.auth-tab { color:#64748b; transition:.2s ease; cursor:pointer; }
+.auth-tab.active { color:#000308; background:linear-gradient(135deg,#00FFFF,#0891b2); font-weight:700; box-shadow:0 4px 18px rgba(0,255,255,.4); }
+.section-label { color:#00FFFF; font-size:9px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; text-shadow:0 0 10px rgba(0,255,255,.4); }
+.usage-track { height:6px; overflow:hidden; border-radius:999px; background:rgba(255,255,255,.06); }
+.usage-bar { height:100%; width:100%; border-radius:inherit; background:linear-gradient(90deg,#0891b2,#00FFFF); box-shadow:0 0 15px rgba(0,255,255,.7); }
+.hidden { display:none!important; }
+.ambient { position:fixed; width:380px; height:380px; border-radius:50%; pointer-events:none; z-index:-1; filter:blur(80px); opacity:.55; }
+.ambient.one { left:-160px; top:50px; background:rgba(0,255,255,.25); }
+.ambient.two { right:-170px; bottom:60px; background:rgba(0,200,255,.2); }
+</style>
 </head>
 
 <body class="min-h-screen px-3 py-3 sm:px-5 sm:py-5">
-  <div class="ambient one"></div>
-  <div class="ambient two"></div>
 
-  <div class="w-full max-w-2xl mx-auto flex min-h-[calc(100vh-24px)] sm:min-h-[calc(100vh-40px)] flex-col">
+<div class="ambient one"></div>
+<div class="ambient two"></div>
 
-    <!-- HEADER / TOPBAR -->
-    <header class="topbar glass rounded-[16px] px-4 py-3.5 flex items-center justify-between shrink-0">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="brand-mark w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0">
-          <i class="fa-solid fa-wand-magic-sparkles text-cyan-300 text-sm drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]"></i>
-        </div>
-        <div class="min-w-0">
-          <div class="font-display font-bold text-[13px] text-white tracking-tight truncate drop-shadow-[0_0_10px_rgba(56,189,248,0.3)]">Thanz Dev</div>
-          <div class="text-[9px] text-[#38bdf8] mt-0.5 tracking-wide">Alight Motion Toolkit</div>
-        </div>
-      </div>
+<div class="w-full max-w-2xl mx-auto flex min-h-[calc(100vh-24px)] flex-col justify-between">
 
-      <div class="flex items-center gap-2">
-        <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[.03] border border-white/[.06] text-[9px] text-[#7dd3fc]">
-          <span class="status-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          Online
-        </div>
-        <div class="text-[9px] px-2.5 py-1.5 rounded-full bg-cyan-500/[.12] border border-cyan-400/[.25] text-cyan-200 shadow-[0_0_10px_rgba(6,182,212,0.2)]">
-          Free Access
-        </div>
-      </div>
-    </header>
-
-    <!-- UTAMA -->
-    <main class="flex-1 flex flex-col justify-center py-5">
-      <div class="w-full max-w-md mx-auto">
-        <div class="glass rounded-[16px] overflow-hidden">
-
-          <!-- KONTEN ALIGHT MOTION -->
-          <div id="viewAM" class="p-4 sm:p-5">
-            <div class="mb-5">
-              <div class="section-label mb-1.5">Alight Motion V1</div>
-              <h2 class="font-display font-bold text-[14px] text-white">Generator Akun Pro</h2>
-              <p id="flowInstruction" class="text-[10px] text-[#94a3b8] mt-1.5 leading-relaxed">
-                Isi email aktif, kirim magic link, lalu verifikasi untuk mendapatkan akun Pro.
-              </p>
-            </div>
-
-            <!-- LANGKAH 1: EMAIL -->
-            <div id="stepEmailBox" class="space-y-3">
-              <div>
-                <label class="block text-[10px] font-medium text-[#bae6fd] mb-1.5">Email Alight Motion</label>
-                <input id="inputEmail" type="email" placeholder="nama@gmail.com" class="px-3.5 py-3 text-[11px]" />
-              </div>
-              <button onclick="handleSendMagicLink()" class="btn btn-primary w-full py-3 text-[11px] font-bold text-white">
-                <i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Magic Link
-              </button>
-            </div>
-
-            <!-- LANGKAH 2: VERIFIKASI LINK -->
-            <div id="stepVerifyBox" class="hidden space-y-3">
-              <div>
-                <label class="block text-[10px] font-medium text-[#bae6fd] mb-1.5">Tautan / Magic Link</label>
-                <input id="inputLink" type="url" placeholder="https://..." class="px-3.5 py-3 text-[11px]" />
-              </div>
-              <div class="grid grid-cols-[1fr_auto] gap-2">
-                <button onclick="handleVerifyLink()" class="btn btn-primary py-3 text-[11px] font-bold text-white">
-                  Verifikasi Link
-                </button>
-                <button onclick="resetAmFlow()" class="btn btn-ghost px-3 text-[#bae6fd]">
-                  <i class="fa-solid fa-rotate-left"></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- LANGKAH 3: HASIL -->
-            <div id="stepSuccessBox" class="hidden space-y-3 text-center py-2">
-              <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-lg mb-2 shadow-[0_0_15px_rgba(52,211,153,0.3)]">
-                <i class="fa-solid fa-check"></i>
-              </div>
-              <h3 class="font-bold text-white text-[13px]">Akun Pro Berhasil Diproses!</h3>
-              <div class="result-box p-3 rounded-[11px] text-left">
-                <div class="text-[9px] text-[#94a3b8]">Kode Order</div>
-                <div id="codeOrder" class="font-mono text-[12px] text-cyan-300 font-bold mt-0.5">—</div>
-              </div>
-              <button onclick="resetAmFlow()" class="btn btn-ghost w-full py-2.5 text-[10px]">Buat Lagi</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="text-center pb-2 pt-1">
-      <div class="text-[9px] text-[#64748b]">
-        Am Generator <span class="mx-1 text-[#38bdf8]/55">•</span> Free Tools <span class="mx-1 text-[#38bdf8]/55">•</span> ThanzDev
-      </div>
-    </footer>
+<!-- HEADER -->
+<header class="topbar glass rounded-[16px] px-4 py-3.5 flex items-center justify-between shrink-0">
+  <div class="flex items-center gap-3 min-w-0">
+    <div class="brand-mark w-9 h-9 rounded-[11px] flex items-center justify-center shrink-0">
+      <i class="fa-solid fa-wand-magic-sparkles text-[#00FFFF] text-sm"></i>
+    </div>
+    <div class="min-w-0">
+      <div class="font-display font-bold text-[13px] text-white tracking-tight truncate">AM Pro Toolkit</div>
+      <div class="text-[9px] text-[#00FFFF] mt-0.5 tracking-wide">Thanz Dev</div>
+    </div>
   </div>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="toast fixed z-50 bottom-5 left-1/2 glass rounded-[12px] px-4 py-3 text-[10px] text-white shadow-2xl max-w-[calc(100vw-32px)]"></div>
+  <div class="flex items-center gap-2">
+    <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/[.03] border border-white/[.06] text-[9px] text-[#a5f3fc]">
+      <span class="status-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span> System Online
+    </div>
+    <!-- HIDDEN ADMIN TRIGGER: KLIK PADA BADGE V2.5 INI -->
+    <button id="hiddenAdminTrigger" class="text-[9px] px-2.5 py-1.5 rounded-full bg-[#00FFFF]/[.12] border border-[#00FFFF]/[.3] text-[#00FFFF] font-bold cursor-pointer hover:bg-[#00FFFF]/[.25] transition-all" title="Klik rahasia ke Admin">
+      v2.5
+    </button>
+  </div>
+</header>
 
-  <script src="app.js"></script>
+<!-- MAIN -->
+<main class="flex-1 flex flex-col justify-center py-5">
+
+  <!-- AUTH SECTION -->
+  <section id="authSection" class="w-full max-w-md mx-auto">
+    <div class="text-center mb-5">
+      <div class="section-label mb-2">WELCOME ALL, SELAMAT MEMAKAI FITURNYA</div>
+      <h1 class="font-marker font-normal text-[26px] sm:text-[30px] text-white tracking-wide py-1">Aktivasi</h1>
+      <p class="text-[11px] text-[#64748b] mt-1.5">©THANZ DEV SINCE 2026</p>
+    </div>
+
+    <div class="auth-tabs rounded-[13px] grid grid-cols-2 gap-1 mb-3">
+      <button class="auth-tab active py-2.5 rounded-[9px] text-[11px]" onclick="switchTab('login')" id="loginTab">Login</button>
+      <button class="auth-tab py-2.5 rounded-[9px] text-[11px]" onclick="switchTab('register')" id="registerTab">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginCard" class="glass rounded-[16px] p-5 sm:p-6">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <div class="section-label mb-1.5">Account</div>
+          <h2 class="font-display font-bold text-[14px] text-white">Masuk ke akun</h2>
+        </div>
+        <div class="w-8 h-8 rounded-[10px] glass-soft flex items-center justify-center text-[#00FFFF]">
+          <i class="fa-solid fa-arrow-right-to-bracket text-[11px]"></i>
+        </div>
+      </div>
+
+      <div class="space-y-3.5">
+        <div>
+          <label class="block text-[10px] font-medium text-[#cffafe] mb-1.5">Username</label>
+          <input type="text" id="loginUser" placeholder="Masukkan username" class="px-3.5 py-3 text-[11px]">
+        </div>
+        <div>
+          <label class="block text-[10px] font-medium text-[#cffafe] mb-1.5">Password</label>
+          <input type="password" id="loginPass" placeholder="Masukkan password" class="px-3.5 py-3 text-[11px]">
+        </div>
+        <button id="submitLogin" class="btn btn-primary w-full py-3 text-[11px]">Login</button>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerCard" class="glass rounded-[16px] p-5 sm:p-6 hidden">
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <div class="section-label mb-1.5">Self Registration</div>
+          <h2 class="font-display font-bold text-[14px] text-white">Buat Akun Baru</h2>
+        </div>
+        <div class="w-8 h-8 rounded-[10px] glass-soft flex items-center justify-center text-[#00FFFF]">
+          <i class="fa-solid fa-user-plus text-[11px]"></i>
+        </div>
+      </div>
+
+      <div id="regAlertBox" class="mb-4 p-3 rounded-[11px] bg-[#00FFFF]/[.05] border border-[#00FFFF]/[.2] flex gap-2.5">
+        <i class="fa-solid fa-circle-info text-[#00FFFF] text-[11px] mt-0.5"></i>
+        <p class="text-[10px] leading-relaxed text-cyan-200/80">1 Perangkat hanya dapat mendaftarkan 1 akun untuk selamanya.</p>
+      </div>
+
+      <div class="space-y-3.5">
+        <div>
+          <label class="block text-[10px] font-medium text-[#cffafe] mb-1.5">Username Pilihan</label>
+          <input type="text" id="regUser" placeholder="contoh: thanzuser" class="px-3.5 py-3 text-[11px]">
+        </div>
+        <div>
+          <label class="block text-[10px] font-medium text-[#cffafe] mb-1.5">Password Pilihan</label>
+          <input type="password" id="regPass" placeholder="Buat password" class="px-3.5 py-3 text-[11px]">
+        </div>
+        <button id="submitRegister" class="btn btn-success w-full py-3 text-[11px] font-bold">Daftar Akun Permanen</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- USER DASHBOARD SECTION -->
+  <section id="dashboardSection" class="w-full max-w-md mx-auto hidden">
+    <div class="glass rounded-[16px] p-4 sm:p-5 mb-3">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-[12px] flex items-center justify-center text-[#00FFFF] font-bold text-xs brand-mark">U</div>
+          <div>
+            <div id="loggedInUsername" class="font-display font-bold text-[13px] text-white"></div>
+            <div class="flex items-center gap-1.5 mt-1 text-[9px] text-emerald-400">
+              <span class="status-dot w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Sesi Aktif
+            </div>
+          </div>
+        </div>
+        <button id="userLogoutBtn" class="btn btn-ghost px-3 py-2 text-[9px]">
+          <i class="fa-solid fa-right-from-bracket mr-1"></i> Keluar
+        </button>
+      </div>
+
+      <div class="mt-5 pt-4 border-t border-white/[.06]">
+        <div class="flex items-center justify-between mb-2">
+          <div>
+            <div class="section-label">Credit Status</div>
+            <div id="injectCreditStatus" class="mt-1 font-display font-bold text-[12px] text-emerald-400">Tersedia</div>
+          </div>
+          <div class="text-right">
+            <div class="section-label">Limit Kuota</div>
+            <div class="text-[10px] text-[#00FFFF] mt-1">1x / 24 Jam</div>
+          </div>
+        </div>
+        <div class="usage-track mt-3"><div class="usage-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- TOOLBOX INJECT -->
+    <div class="glass rounded-[16px] overflow-hidden p-4 sm:p-5">
+      <div class="mb-4">
+        <div class="section-label mb-1.5">Magic Link Engine</div>
+        <h2 class="font-display font-bold text-[14px] text-white">Aktivasi Alight Motion</h2>
+        <p class="text-[10px] text-[#64748b] mt-1">Masukkan email aktif untuk menerima magic link.</p>
+      </div>
+
+      <!-- STEP 1: SEND EMAIL -->
+      <div id="emailSection" class="space-y-3">
+        <input type="email" id="emailInput" placeholder="email@domain.com" class="px-3.5 py-3 text-[11px]">
+        <button id="sendBtn" class="btn btn-primary w-full py-3 text-[11px]">
+          <i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Magic Link (Gunakan Kredit)
+        </button>
+      </div>
+
+      <!-- STEP 2: VERIFY URL -->
+      <div id="magicSection" class="hidden space-y-3">
+        <div class="flex justify-between items-center">
+          <label class="text-[10px] text-cyan-300">Tempel Magic Link</label>
+          <button id="changeEmailBtn" class="text-[9px] text-[#00FFFF] hover:underline">Ganti Email</button>
+        </div>
+        <input type="url" id="magicInput" placeholder="https://..." class="px-3.5 py-3 text-[11px]">
+        <button id="activateBtn" class="btn btn-primary w-full py-3 text-[11px]">
+          <span id="btnDefault">Proses Aktivasi Inject</span>
+          <span id="loaderContainer" class="hidden">Memproses...</span>
+          <span id="btnSuccess" class="hidden text-emerald-300">✓ Berhasil Diaktifkan!</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="text-center pb-2 pt-1">
+  <div class="text-[9px] text-[#64748b]">AM Pro Toolkit <span class="mx-1 text-[#00FFFF]/55">•</span> Secure API <span class="mx-1 text-[#00FFFF]/55">•</span> ThanzDev</div>
+</footer>
+</div>
+
+<div id="errorMsg" class="hidden fixed z-50 bottom-5 left-1/2 -translate-x-1/2 glass rounded-[12px] px-4 py-3 text-[10px] text-rose-300 border border-rose-500/40 shadow-2xl"></div>
+
+<script>
+(function() {
+    'use strict';
+    const authSection = document.getElementById('authSection');
+    const dashboardSection = document.getElementById('dashboardSection');
+    const loginCard = document.getElementById('loginCard');
+    const registerCard = document.getElementById('registerCard');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    
+    const regUser = document.getElementById('regUser');
+    const regPass = document.getElementById('regPass');
+    const submitRegister = document.getElementById('submitRegister');
+    const regAlertBox = document.getElementById('regAlertBox');
+    
+    const loginUser = document.getElementById('loginUser');
+    const loginPass = document.getElementById('loginPass');
+    const submitLogin = document.getElementById('submitLogin');
+    const loggedInUsername = document.getElementById('loggedInUsername');
+    const userLogoutBtn = document.getElementById('userLogoutBtn');
+    
+    const emailInput = document.getElementById('emailInput');
+    const magicInput = document.getElementById('magicInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const activateBtn = document.getElementById('activateBtn');
+    const btnDefault = document.getElementById('btnDefault');
+    const loaderContainer = document.getElementById('loaderContainer');
+    const btnSuccess = document.getElementById('btnSuccess');
+    const errorMsg = document.getElementById('errorMsg');
+    
+    const emailSection = document.getElementById('emailSection');
+    const magicSection = document.getElementById('magicSection');
+    const changeEmailBtn = document.getElementById('changeEmailBtn');
+    const injectCreditStatus = document.getElementById('injectCreditStatus');
+    const hiddenAdminTrigger = document.getElementById('hiddenAdminTrigger');
+
+    let cachedEmail = '';
+    const COOLDOWN_HOURS = 24;
+
+    hiddenAdminTrigger.addEventListener('click', () => {
+        window.location.href = '/admin';
+    });
+
+    function showError(text) {
+        errorMsg.textContent = text;
+        errorMsg.classList.remove('hidden');
+        setTimeout(() => errorMsg.classList.add('hidden'), 4000);
+    }
+
+    function checkDeviceRegistrationLock() {
+        if (localStorage.getItem('am_device_registered') === 'true') {
+            submitRegister.disabled = true;
+            submitRegister.classList.add('opacity-50', 'cursor-not-allowed');
+            regUser.disabled = true;
+            regPass.disabled = true;
+            regAlertBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400 mr-1"></i> Perangkat ini <strong>sudah terkunci</strong> dan pernah mendaftar akun.`;
+            return true;
+        }
+        return false;
+    }
+
+    function checkInjectCredit(username) {
+        let userInjects = JSON.parse(localStorage.getItem('am_user_injects') || '{}');
+        const lastInject = userInjects[username];
+        
+        if (!lastInject) {
+            injectCreditStatus.textContent = "Kredit Inject: Tersedia (1/1)";
+            injectCreditStatus.className = "mt-1 font-display font-bold text-[12px] text-emerald-400";
+            return false;
+        }
+        const diffHours = (new Date().getTime() - parseInt(lastInject)) / (1000 * 60 * 60);
+        if (diffHours < COOLDOWN_HOURS) {
+            const left = Math.ceil(COOLDOWN_HOURS - diffHours);
+            injectCreditStatus.textContent = `Cooldown ~${left} jam lagi`;
+            injectCreditStatus.className = "mt-1 font-display font-bold text-[12px] text-amber-400";
+            return true;
+        } else {
+            delete userInjects[username];
+            localStorage.setItem('am_user_injects', JSON.stringify(userInjects));
+            injectCreditStatus.textContent = "Kredit Inject: Tersedia (1/1)";
+            injectCreditStatus.className = "mt-1 font-display font-bold text-[12px] text-emerald-400";
+            return false;
+        }
+    }
+
+    function useInjectCredit(username) {
+        let userInjects = JSON.parse(localStorage.getItem('am_user_injects') || '{}');
+        userInjects[username] = new Date().getTime().toString();
+        localStorage.setItem('am_user_injects', JSON.stringify(userInjects));
+        checkInjectCredit(username);
+    }
+
+    window.switchTab = function(tab) {
+        if (tab === 'login') {
+            loginCard.classList.remove('hidden');
+            registerCard.classList.add('hidden');
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+        } else {
+            loginCard.classList.add('hidden');
+            registerCard.classList.remove('hidden');
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            checkDeviceRegistrationLock();
+        }
+    };
+
+    submitRegister.addEventListener('click', () => {
+        if (checkDeviceRegistrationLock()) return showError('Perangkat ini sudah terkunci.');
+        const u = regUser.value.trim(), p = regPass.value.trim();
+        if (!u || !p) return showError('Username dan Password wajib diisi.');
+        let users = JSON.parse(localStorage.getItem('am_users') || '{}');
+        if (users[u]) return showError('Username sudah digunakan.');
+        users[u] = p;
+        localStorage.setItem('am_users', JSON.stringify(users));
+        localStorage.setItem('am_device_registered', 'true');
+        alert('Registrasi berhasil! Perangkat terkunci permanen.');
+        switchTab('login');
+    });
+
+    submitLogin.addEventListener('click', () => {
+        const u = loginUser.value.trim(), p = loginPass.value.trim();
+        let users = JSON.parse(localStorage.getItem('am_users') || '{}');
+        if (!users[u] || users[u] !== p) return showError('Username atau Password salah.');
+        localStorage.setItem('am_logged_in_user', u);
+        checkAuthSession();
+    });
+
+    userLogoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('am_logged_in_user');
+        checkAuthSession();
+    });
+
+    function checkAuthSession() {
+        const user = localStorage.getItem('am_logged_in_user');
+        if (user) {
+            authSection.classList.add('hidden');
+            dashboardSection.classList.remove('hidden');
+            loggedInUsername.textContent = user;
+            checkInjectCredit(user);
+        } else {
+            dashboardSection.classList.add('hidden');
+            authSection.classList.remove('hidden');
+            loginUser.value = '';
+            loginPass.value = '';
+        }
+    }
+
+    sendBtn.addEventListener('click', async () => {
+        const user = localStorage.getItem('am_logged_in_user');
+        if (checkInjectCredit(user)) return showError('Kredit inject Anda habis untuk 24 jam ini!');
+        const email = emailInput.value.trim();
+        if (!email) return showError('Masukkan alamat email aktif.');
+        sendBtn.disabled = true;
+        try {
+            const res = await fetch('/api/send', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email}) });
+            const data = await res.json();
+            if (data.status) {
+                cachedEmail = email;
+                emailSection.classList.add('hidden');
+                magicSection.classList.remove('hidden');
+            } else { showError(data.error || 'Gagal mengirim email.'); }
+        } catch(e) { showError('Kesalahan jaringan.'); }
+        sendBtn.disabled = false;
+    });
+
+    changeEmailBtn.addEventListener('click', () => {
+        magicSection.classList.add('hidden');
+        emailSection.classList.remove('hidden');
+    });
+
+    activateBtn.addEventListener('click', async () => {
+        const user = localStorage.getItem('am_logged_in_user');
+        const magic = magicInput.value.trim();
+        if (!magic) return showError('Masukkan URL magic link.');
+        btnDefault.classList.add('hidden');
+        loaderContainer.classList.remove('hidden');
+        try {
+            const res = await fetch('/api/verif', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: cachedEmail, magicLink: magic}) });
+            const data = await res.json();
+            if (data.status) {
+                loaderContainer.classList.add('hidden');
+                btnSuccess.classList.remove('hidden');
+                useInjectCredit(user);
+            } else {
+                loaderContainer.classList.add('hidden');
+                btnDefault.classList.remove('hidden');
+                showError(data.error || 'Verifikasi gagal.');
+            }
+        } catch(e) {
+            loaderContainer.classList.add('hidden');
+            btnDefault.classList.remove('hidden');
+            showError('Kesalahan server.');
+        }
+    });
+
+    checkAuthSession();
+})();
+</script>
 </body>
 </html>
+
